@@ -10,25 +10,28 @@ import Loading from '../../components/loading/Loading';
 export interface loginPageProps {}
 
 const SignUpPage: React.FC<loginPageProps> = () => {
-  const navigate = useNavigate();
-  const { auth, user } = useContext(authContext);
-  useEffect(
-    () => {
-      if (user && auth) {
-        navigate('/');
-      }
-    }
-    //    [auth, navigate, user]
-  );
+  // const { auth, user } = useContext(authContext);
+  // useEffect(
+  //   () => {
+  //     if (user && auth) {
+  //       navigate('/');
+  //     }
+  //   }
+  //    [auth, navigate, user]
+  // );
   const [loading, setLoading] = useState<boolean>(false);
 
-  return !loading ? (
+  // return !loading ? (
+  return (
     <div className="w-4/6 m-auto mt-20 p-10 bg-slate-300 rounded-lg">
-      <SignUpForm loading={loading} setLoading={setLoading} />
+      <SignUpForm loading={loading} setLoading={setLoading} />;
     </div>
-  ) : (
-    <Loading />
   );
+
+  // )
+  // : (
+  // <Loading />
+  // );
 };
 
 export default SignUpPage;

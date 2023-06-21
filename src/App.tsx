@@ -1,57 +1,11 @@
 import './App.css';
-import {
-  RouterProvider,
-  createBrowserRouter,
-  matchRoutes,
-} from 'react-router-dom';
-import HomePage from './pages/homepage/homepage';
+import HomePage from './pages/homepage/Homepage2';
 import LoginPage from './pages/loginpage/loginPage';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { createContext } from 'react';
 import { userFromDb } from './models/user.models';
 import SignUpPage from './pages/signuppage/signupPage';
-import MessagePage from './pages/messagepage/messagePage';
-import Layout from './layout/Layout';
-import Loading from './components/loading/Loading';
-
-const router = createBrowserRouter([
-  {
-    children: [
-      {
-        path: '/',
-        element: (
-          <Layout>
-            <HomePage />
-          </Layout>
-        ),
-      },
-      {
-        path: '/login',
-        element: (
-          <Layout>
-            <LoginPage />
-          </Layout>
-        ),
-      },
-      {
-        path: '/signup',
-        element: (
-          <Layout>
-            <SignUpPage />
-          </Layout>
-        ),
-      },
-      {
-        path: '/message/:id',
-        element: (
-          <Layout>
-            <MessagePage match={matchRoutes} location={location} />{' '}
-          </Layout>
-        ),
-      },
-    ],
-  },
-]);
+import { Layout } from 'antd';
 
 export interface authContextType {
   user?: userFromDb | undefined;
@@ -60,18 +14,35 @@ export interface authContextType {
   setAuth?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+export interface methContextType {
+  meth: 'login' | 'signup';
+  toggle: () => void;
+}
+
 function App() {
   const [user, setUser] = useState<userFromDb | undefined>();
+  const [meth, setMeth] = useState<'login' | 'signup'>('signup');
 
   const [auth, setAuth] = useState<boolean>(false);
 
+  const toggle = useCallback(() => {
+    if (meth == 'login') {
+      setMeth('signup');
+    } else {
+      setMeth('login');
+    }
+  }, [meth]);
+
   return (
     <authContext.Provider value={{ auth, user, setUser, setAuth }}>
-      <RouterProvider
-        router={router}
-        future={{ v7_startTransition: true }}
-        fallbackElement={<Loading />}
-      />
+      {auth ? (
+        <HomePage />
+      ) : (
+        // <div>Hey!</div>
+        <methContext.Provider value={{ meth, toggle }}>
+          <Layout>{meth == 'login' ? <LoginPage /> : <SignUpPage />}</Layout>
+        </methContext.Provider>
+      )}
     </authContext.Provider>
   );
 }
@@ -79,5 +50,8 @@ function App() {
 // eslint-disable-next-line react-refresh/only-export-components
 export const authContext = createContext<authContextType>({});
 // export {authContext};
-
+// eslint-disable-next-line react-refresh/only-export-components
+export const methContext = createContext<methContextType | undefined>(
+  undefined
+);
 export default App;

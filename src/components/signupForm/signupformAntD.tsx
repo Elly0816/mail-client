@@ -1,10 +1,11 @@
 import { Button, Form, Input } from 'antd';
 import React, { useContext } from 'react';
-import { authContext, authContextType } from '../../App';
+import { authContext, authContextType, methContextType } from '../../App';
 import { userFromDb } from '../../models/user.models';
 import { queryServer } from '../../utils/types/helper/helper';
 import { AxiosError } from 'axios';
 import { Link } from 'react-router-dom';
+import { methContext } from '../../App';
 
 type Inputs = {
   email: string;
@@ -31,6 +32,8 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
   const { setAuth, setUser } = useContext(authContext) as authContextType;
 
   const [form] = Form.useForm();
+
+  const { meth, toggle } = useContext(methContext) as methContextType;
 
   const onFinish = (values: Inputs) => {
     setLoading(true);
@@ -133,7 +136,14 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
             Register
           </Button>
           {'     '}
-          <Link to="/login">Login now!</Link>
+          <Button
+            type="primary"
+            onClick={() => {
+              toggle();
+            }}
+          >
+            Login Instead
+          </Button>
         </Form.Item>
       </Form.Item>
     </Form>

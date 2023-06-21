@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { Button, Form, Input } from 'antd';
-import { authContext, authContextType } from '../../App';
+import { authContext, authContextType, methContextType } from '../../App';
 import { queryServer } from '../../utils/types/helper/helper';
 import { userFromDb } from '../../models/user.models';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import './loginForm.css';
-import { Link } from 'react-router-dom';
+import { methContext } from '../../App';
 
 type Inputs = {
   email: string;
@@ -19,7 +19,7 @@ export interface loginFormInput {
 
 const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
   const { setAuth, setUser } = useContext(authContext) as authContextType;
-
+  const { meth, toggle } = useContext(methContext) as methContextType;
   const onFinish = (values: Inputs) => {
     setLoading(true);
 
@@ -86,7 +86,14 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
         <Button type="primary" htmlType="submit" className="login-form-button">
           Log in
         </Button>
-        Or <Link to="/signup">Register Now!</Link>
+        <Button
+          type="primary"
+          onClick={() => {
+            toggle();
+          }}
+        >
+          SignUp Instead
+        </Button>
       </Form.Item>
     </Form>
   );

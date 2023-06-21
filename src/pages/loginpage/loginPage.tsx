@@ -10,24 +10,12 @@ import Loading from '../../components/loading/Loading';
 export interface loginPageProps {}
 
 const LoginPage: React.FC<loginPageProps> = () => {
-  const navigate = useNavigate();
-  const { auth, user } = useContext(authContext);
-  useEffect(
-    () => {
-      if (user && auth) {
-        navigate('/');
-      }
-    }
-    //  [auth, navigate, user]
-  );
   const [loading, setLoading] = useState<boolean>(false);
 
-  return !loading ? (
+  return (
     <div className="w-2/6 m-auto mt-20 p-10 bg-slate-300 rounded-lg">
       <LoginForm loading={loading} setLoading={setLoading} />
     </div>
-  ) : (
-    <Loading />
   );
 };
 

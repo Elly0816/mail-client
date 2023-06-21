@@ -3,4 +3,5 @@ export interface threadFromDb {
   createdAt: Date;
   lastModified: Date;
   messages: [string];
+  lastMessage: string;
 }

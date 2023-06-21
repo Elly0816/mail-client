@@ -15,8 +15,6 @@ const { Header, Content, Footer } = Layout;
 
 const LayoutPage: React.FC<layoutProps> = ({ children }) => {
   const { auth, user, setAuth, setUser } = useContext(authContext);
-  const navigate = useNavigate();
-
   const [, setAccess] = useLocalStorage({ name: 'access' });
   const [, setRefresh] = useLocalStorage({ name: 'refresh' });
 
@@ -41,7 +39,7 @@ const LayoutPage: React.FC<layoutProps> = ({ children }) => {
         console.log(err);
       })
       .finally(() => {
-        navigate('/login');
+        // navigate('/login');
       });
   };
 

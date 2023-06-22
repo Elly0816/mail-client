@@ -82,19 +82,27 @@ function App() {
     }
   }, [data]);
 
-  const addUnread: (threadId: string, unreadCount: number) => void = (
+  const addUnread: (threadId: string, locUnreadCount: number) => void = (
     threadId,
-    unreadCount
+    locUnreadCount
   ) => {
-    setUnreadCount(({ threads, unread }) => {
-      if (threads.includes(threadId)) {
-        return { threads, unread };
-      } else {
+    if (unreadCount.threads.includes(threadId)) {
+      return;
+    } else {
+      setUnreadCount(({ threads, unread }) => {
         threads.push(threadId);
-        unread += unreadCount;
+        unread += locUnreadCount;
         return { threads, unread };
-      }
-    });
+      });
+      // setUnreadCount(({ threads, unread }) => {
+      //   if (threads.includes(threadId)) {
+      //     return { threads, unread };
+      //   } else {
+      //     threads.push(threadId);
+      //     unread += unreadCount;
+      //     return { threads, unread };
+      //   }
+    }
   };
 
   const main = (

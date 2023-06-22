@@ -6,6 +6,7 @@ import { queryServer } from '../../utils/types/helper/helper';
 import { AxiosError } from 'axios';
 import { Link } from 'react-router-dom';
 import { methContext } from '../../App';
+import { COLORS } from '../../constants/constants';
 
 type Inputs = {
   email: string;
@@ -128,22 +129,26 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
         <Input.Password />
         <Form.Item />
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-          >
-            Register
-          </Button>
-          {'     '}
-          <Button
-            type="primary"
-            onClick={() => {
-              toggle();
-            }}
-          >
-            Login Instead
-          </Button>
+          <div className="flex flex-row justify-evenly">
+            <Button
+              style={{ backgroundColor: COLORS.secondary }}
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+            >
+              Register
+            </Button>
+            {'     '}
+            <Button
+              style={{ backgroundColor: COLORS.secondary }}
+              type="primary"
+              onClick={() => {
+                toggle();
+              }}
+            >
+              Login Instead
+            </Button>
+          </div>
         </Form.Item>
       </Form.Item>
     </Form>

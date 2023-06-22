@@ -11,6 +11,7 @@ const queryServer = ({
   formdata: unknown;
 }): Promise<AxiosResponse<AxiosResponse['data'], Error>> => {
   const controller = new AbortController();
+  console.log('++' + JSON.stringify(formdata));
   const config = {
     method: method,
     url: url,
@@ -22,7 +23,10 @@ const queryServer = ({
 
 const getNameFromUser = (input: string): string => {
   console.log(input);
-  return input ? input.split('@')[0] : '';
+  const firstLetter = input[0].toUpperCase();
+  const rest = input.slice(1);
+  const together = firstLetter + rest;
+  return input ? together.split('@')[0] : '';
 };
 
 export { queryServer, getNameFromUser };

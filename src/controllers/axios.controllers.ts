@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
-const BASE = import.meta.env.VITE_APP_ENDPOINT;
+// const BASE = import.meta.env.VITE_APP_ENDPOINT;
+const BASE = 'http://localhost:3000';
 
 let instance: AxiosInstance | undefined;
 

@@ -3,7 +3,7 @@ export interface message {
   body: string;
   from: string;
   to: string;
-  threadId?: string;
+  threadId: string;
 }
 export interface messageFromDb extends message {
   _id: string;

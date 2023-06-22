@@ -1,96 +1,122 @@
-import { Button, Form, Input } from 'antd';
-import React, { useContext } from 'react';
-import { UseFetchProps } from '../../hooks/useFetch';
-import { authContext } from '../../App';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Input, Layout, Space } from 'antd';
 import { queryServer } from '../../utils/types/helper/helper';
+import { threadContext } from '../../pages/homepage/Homepage2';
+import { userFromDb } from '../../models/user.models';
+import { COLORS } from '../../constants/constants';
 
 const { TextArea } = Input;
 
-export interface composeInterface {
-  method: UseFetchProps['method'];
-  threadId?: string;
-  to?: string;
-  title: string;
-  // message:{from:string, to:string, message:string, threadId?:string|undefined}
+interface Compose {
+  otherUserEmail?: string;
+  currentThreadId?: string;
+  setUser: (user: userFromDb) => void;
 }
 
-interface Inputs {
-  to: string;
-  title: string;
-  body: string;
-}
-
-const Compose: React.FC<composeInterface> = ({
-  method,
-  threadId,
-  to,
-  title,
+const App: React.FC<Compose> = ({
+  otherUserEmail,
+  currentThreadId,
+  setUser,
 }) => {
-  const { setUser, user } = useContext(authContext);
-  const [form] = Form.useForm();
+  const [emailTo, setEmailTo] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+  const [emailTitle, setEmailTitle] = useState('');
+  // const { currentThreadId, userTo } = useContext(threadContext);
 
-  const onFinish = (data: Inputs) => {
-    const config = {
-      formdata: {
-        message: {
-          to: to ? to : data.to,
-          title: data.title,
-          body: data.body,
-          threadId: threadId,
-        },
-      },
-      method: method as string,
-      url: '/message',
-    };
-    console.log(config);
+  const [disabled, setDisabled] = useState(true);
 
-    queryServer(config)
-      .then((res) => {
-        setUser && setUser(res.data.user);
-        console.log('xxx' + JSON.stringify(res));
-        form.resetFields();
+  const sendEmail: () => void = () => {
+    setDisabled(true);
+    console.log(
+      JSON.stringify({
+        title: emailTitle,
+        body: emailMessage,
+        to: emailTo,
+        threadId: currentThreadId,
       })
-      .catch((e) => {
-        console.log(e);
+    );
+    queryServer({
+      method: 'post',
+      url: '/message',
+      formdata: {
+        title: emailTitle,
+        body: emailMessage,
+        to: emailTo,
+        threadId: currentThreadId,
+      },
+    })
+      .then((res) => {
+        if (res.data) {
+          setUser(res.data.user);
+          !otherUserEmail && setEmailTo('');
+          setEmailTitle('');
+          setEmailMessage('');
+          setDisabled(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setDisabled(false);
       });
-
-    console.log('Success:', data);
   };
+  useEffect(() => {
+    otherUserEmail && setEmailTo(otherUserEmail);
+  }, [otherUserEmail]);
+
+  useEffect(() => {
+    emailMessage && emailTitle && emailTo && setDisabled(false);
+  }, [emailTo, emailMessage, emailTitle]);
 
   return (
-    <div className="m-auto w-4/6 mt-20 p-10 bg-slate-300 rounded-lg">
-      <div>
-        <h2>{title}</h2>
-      </div>
-      <Form
-        form={form}
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 14 }}
-        layout="horizontal"
-        // disabled={componentDisabled}
-        style={{ maxWidth: 600 }}
-        onFinish={onFinish}
+    <Layout>
+      <Space
+        className="overflow-y h-auto border-10 border-black"
+        direction="vertical"
+        size="middle"
+        // style={{ display: 'flex' }}
       >
-        {!to && (
-          <Form.Item name="to" label="Email to">
-            <Input placeholder="Sender Address" />
-          </Form.Item>
-        )}
-        <Form.Item label="Title" name="title">
-          <Input placeholder="Message Title" />
-        </Form.Item>
+        {/* <> */}
+        {/* {!otherUserEmail && ( */}
+        <TextArea
+          placeholder="Email to: ..."
+          onChange={(e) => setEmailTo(e.target.value)}
+          value={emailTo}
+          disabled={otherUserEmail ? true : false}
+          style={{ height: '24px' }}
+        />
+        {/* )} */}
 
-        <Form.Item label="TextArea" name="body">
-          <TextArea rows={4} />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Send
+        <div style={{ margin: '24px 0' }} />
+        <TextArea
+          placeholder="Message Title: ..."
+          // autoSize={{ minRows: 2, maxRows: 6 }}
+          value={emailTitle}
+          onChange={(e) => setEmailTitle(e.target.value)}
+        />
+        <div style={{ margin: '24px 0' }} />
+        <div className="flex space-between">
+          <TextArea
+            value={emailMessage}
+            onChange={(e) => setEmailMessage(e.target.value)}
+            placeholder="Message..."
+            autoSize={{ minRows: 3, maxRows: 5 }}
+          />
+          <Button
+            onClick={() => {
+              console.log('hey');
+              sendEmail();
+            }}
+            disabled={disabled}
+            style={{ backgroundColor: COLORS.secondary, color: 'white' }}
+          >
+            <p>Send</p>
           </Button>
-        </Form.Item>
-      </Form>
-    </div>
+        </div>
+      </Space>
+
+      {/* </> */}
+    </Layout>
   );
 };
 
-export default Compose;
+export default App;

@@ -6,6 +6,7 @@ import { userFromDb } from '../../models/user.models';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import './loginForm.css';
 import { methContext } from '../../App';
+import { COLORS } from '../../constants/constants';
 
 type Inputs = {
   email: string;
@@ -83,17 +84,25 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
       </Form.Item> */}
 
       <Form.Item>
-        <Button type="primary" htmlType="submit" className="login-form-button">
-          Log in
-        </Button>
-        <Button
-          type="primary"
-          onClick={() => {
-            toggle();
-          }}
-        >
-          SignUp Instead
-        </Button>
+        <div className="flex flex-row justify-evenly">
+          <Button
+            style={{ backgroundColor: COLORS.secondary }}
+            type="primary"
+            htmlType="submit"
+            className="login-form-button"
+          >
+            Log in
+          </Button>
+          <Button
+            style={{ backgroundColor: COLORS.secondary }}
+            type="primary"
+            onClick={() => {
+              toggle();
+            }}
+          >
+            SignUp Instead
+          </Button>
+        </div>
       </Form.Item>
     </Form>
   );

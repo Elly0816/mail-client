@@ -74,8 +74,8 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
         />
       </Form.Item>
 
-      <Form.Item>
-        <div className="flex flex-row justify-evenly">
+      <Form.Item className="m-auto">
+        <div className="flex flex-col justify-evenly align-middle">
           <Button
             style={{ backgroundColor: COLORS.secondary }}
             type="primary"
@@ -84,15 +84,16 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
           >
             Log in
           </Button>
-          <Button
-            style={{ backgroundColor: COLORS.secondary }}
-            type="primary"
+          <h3
+            style={{ color: COLORS.secondary }}
+            className="hover:cursor-pointer"
+            // type="primary"
             onClick={() => {
               toggle();
             }}
           >
             SignUp Instead
-          </Button>
+          </h3>
         </div>
       </Form.Item>
     </Form>

@@ -71,6 +71,7 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
       onFinish={onFinish}
       style={{ maxWidth: 600 }}
       scrollToFirstError
+      className="flex flex-col justify-center align-middle"
     >
       <Form.Item
         name="email"
@@ -86,7 +87,7 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
           },
         ]}
       >
-        <Input />
+        <Input placeholder="Email" />
       </Form.Item>
 
       <Form.Item
@@ -100,7 +101,7 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
         ]}
         hasFeedback
       >
-        <Input.Password />
+        <Input.Password placeholder="Password" />
       </Form.Item>
 
       <Form.Item
@@ -125,31 +126,31 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
           }),
         ]}
       >
-        <Input.Password />
-        <Form.Item />
-        <Form.Item>
-          <div className="flex flex-row justify-evenly">
-            <Button
-              style={{ backgroundColor: COLORS.secondary }}
-              type="primary"
-              htmlType="submit"
-              className="login-form-button"
-            >
-              Register
-            </Button>
-            {'     '}
-            <Button
-              style={{ backgroundColor: COLORS.secondary }}
-              type="primary"
-              onClick={() => {
-                toggle();
-              }}
-            >
-              Login Instead
-            </Button>
-          </div>
-        </Form.Item>
+        <Input.Password placeholder="confirm password" />
       </Form.Item>
+      {/* <Form.Item className="flex flex-col justify-self-center align-middle m-0">
+      </Form.Item> */}
+      <div className="w-full m-0">
+        <Button
+          style={{ backgroundColor: COLORS.secondary }}
+          type="primary"
+          htmlType="submit"
+          className="login-form-button"
+        >
+          Register
+        </Button>
+        {'     '}
+        <h3
+          style={{ color: COLORS.secondary }}
+          // type="primary"
+          className="hover:cursor-pointer"
+          onClick={() => {
+            toggle();
+          }}
+        >
+          Login Instead
+        </h3>
+      </div>
     </Form>
   );
 };

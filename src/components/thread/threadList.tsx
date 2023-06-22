@@ -17,7 +17,7 @@ const App: React.FC = () => {
 
   return (
     <List
-      className="oveflow-y h-screen"
+      className="oveflow-y h-screen w-auto"
       style={{ backgroundColor: COLORS.secondary }}
       dataSource={user?.threads}
       renderItem={(id: string) => (

@@ -19,6 +19,7 @@ const useLocalStorage = ({
   const [currName, setCurrName] =
     useState<useLocalStorageProps['value']>(value);
   useEffect(() => {
+    console.log('***' + item);
     if (currName) {
       localStorage.setItem(name, currName);
     }
@@ -34,7 +35,7 @@ const useLocalStorage = ({
       const newItem = localStorage.getItem(name);
       setItem(newItem as string);
     }
-  }, [currName, name, value]);
+  }, [currName, item, name, value]);
 
   return [item, setCurrName];
 };

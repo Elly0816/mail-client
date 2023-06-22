@@ -7,6 +7,7 @@ import { authContext } from '../../App';
 import { getNameFromUser } from '../../utils/types/helper/helper';
 import { threadContext } from '../../pages/homepage/Homepage2';
 import { COLORS } from '../../constants/constants';
+// import './Thread.css';
 
 const App: React.FC<{
   threadId: string;
@@ -51,18 +52,22 @@ const App: React.FC<{
       title={
         data && (
           <div
-            className={`flex flex-row hover:text-slate-50  ${
+            className={`center flex flex-col hover:text-slate-50  ${
               data.unread > 0 ? 'font-extrabold' : 'font-medium'
             } justify-between	`}
           >
-            <h4>{`Messages with ${getNameFromUser(data.otherUser)}`}</h4>
-            <h6>{`${data.unread} Unread`}</h6>
+            <div className="text-container">
+              <h4 className="animate">{`Thread with ${getNameFromUser(
+                data.otherUser
+              )}`}</h4>
+              <h6>{`${data.unread} Unread`}</h6>
+            </div>
           </div>
         )
       }
       bordered={true}
       style={{
-        width: 300,
+        width: '100%',
         height: 200,
         borderWidth: 3,
         borderColor: COLORS.secondary,
@@ -82,24 +87,24 @@ const App: React.FC<{
         data && (
           // <ErrorIcon />
           <div
-            className="flex flex-grow m-0 px-0"
+            className="flex flex-grow m-0 px-0 flex-col"
             style={{ backgroundColor: COLORS.primary }}
           >
-            <p>
+            <span>
               {data ? (
                 data.message.lastMessage &&
                 data.message.lastMessage.substring(0, 15) + '...'
               ) : (
                 <Spin />
               )}
-            </p>
-            <p>
+            </span>
+            <span>
               {data ? (
                 data.message.lastModified.toString().split('T')[0]
               ) : (
                 <Spin />
               )}
-            </p>
+            </span>
             {/* <p>{data.name.last}</p> */}
           </div>
         )

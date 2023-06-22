@@ -4,6 +4,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import useFetch from '../../hooks/useFetch';
 import { messageFromDb } from '../../models/message.models';
 import { authContext } from '../../App';
+import { getNameFromUser } from '../../utils/types/helper/helper';
 
 interface Messages {
   id?: string;
@@ -16,7 +17,7 @@ const App: React.FC<Messages> = ({ id }) => {
   });
   const [data, setData] = useState<messageFromDb[]>([]);
 
-  const { setUser } = useContext(authContext);
+  const { setUser, user } = useContext(authContext);
 
   useEffect(() => {
     if (messagesData) {
@@ -30,7 +31,7 @@ const App: React.FC<Messages> = ({ id }) => {
       <div
         id="scrollableDiv"
         style={{
-          height: '50%',
+          height: '60vh',
           overflow: 'auto',
           padding: '0 16px',
           border: '1px solid rgba(140, 140, 140, 0.35)',
@@ -50,10 +51,20 @@ const App: React.FC<Messages> = ({ id }) => {
         >
           <List
             // className=" h-full"
+            style={{ height: '100%' }}
             loading={loading}
             dataSource={data}
             renderItem={(item) => (
-              <Card className="my-5 h-64" title={item.title}>
+              <Card
+                className={`text-left h-1/3 my-10 text-slate-50 ${
+                  item.from == user?.email ? 'bg-green-500' : 'bg-blue-500'
+                }`}
+                title={
+                  <div className=" text-slate-50">
+                    <h4>{getNameFromUser(item.from)}</h4>
+                  </div>
+                }
+              >
                 <h3>{item.body}</h3>
                 <br />
                 <p>{item.date.toString()}</p>
@@ -64,11 +75,14 @@ const App: React.FC<Messages> = ({ id }) => {
       </div>
     ) : (
       // <div style={{ height: '50%' }} className="col-span-2 h-3/6">
-      <Spin style={{ height: '100%' }} className="col-span-2 h-3/6" />
+      <Spin style={{ height: '50vh' }} className="col-span-2 h-3/6" />
       // {/* </div> */}
     )
   ) : (
-    <Empty description="Click on a Thread to View message" className="h-3/6" />
+    <Empty
+      description="Click on a Thread to View message"
+      style={{ height: '60vh' }}
+    />
   );
 };
 

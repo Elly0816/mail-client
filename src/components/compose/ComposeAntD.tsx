@@ -69,47 +69,61 @@ const App: React.FC<Compose> = ({
   }, [emailTo, emailMessage, emailTitle]);
 
   return (
-    <Layout>
+    <Layout className="bottom-0" style={{ height: '40%' }}>
       <Space
-        className="overflow-y h-auto border-10 border-black"
+        className="border-10 border-black"
         direction="vertical"
-        size="middle"
+        size="large"
         // style={{ display: 'flex' }}
       >
         {/* <> */}
         {/* {!otherUserEmail && ( */}
-        {otherUserEmail && (
-          <Button
-            className="m-3"
-            style={{ color: 'whitesmoke', backgroundColor: COLORS.secondary }}
-            onClick={setOtherUserEmail}
-          >
-            New Message
-          </Button>
+        {otherUserEmail ? (
+          <div className="text-lg">
+            <h5>{`Continue conversation with: ${otherUserEmail}`}</h5>
+            <Button
+              className="m-3"
+              style={{ color: 'whitesmoke', backgroundColor: COLORS.secondary }}
+              onClick={setOtherUserEmail}
+            >
+              Click to start a new thread
+            </Button>
+          </div>
+        ) : (
+          <div className="text-lg">
+            <h5>{`Start a new Thread`}</h5>
+          </div>
         )}
         <TextArea
           placeholder="Email to: ..."
           onChange={(e) => setEmailTo(e.target.value)}
           value={emailTo}
           disabled={otherUserEmail ? true : false}
-          style={{ height: '24px' }}
+          style={{ height: '10px' }}
         />
         {/* )} */}
 
-        <div style={{ margin: '24px 0' }} />
+        {/* <div style={{ margin: '10px 0' }} /> */}
         <TextArea
           placeholder="Message Title: ..."
           // autoSize={{ minRows: 2, maxRows: 6 }}
           value={emailTitle}
           onChange={(e) => setEmailTitle(e.target.value)}
+          style={{ height: '10px' }}
         />
-        <div style={{ margin: '24px 0' }} />
-        <div className="flex space-between">
+        {/* <div style={{ margin: '10px 0' }} /> */}
+        <div className="flex space-between w-full items-center justify-evenly">
+          {/* <Space
+            align="center"
+            size={'large'}
+            className="flex space-around overflow-y w-fit"
+          > */}
           <TextArea
             value={emailMessage}
             onChange={(e) => setEmailMessage(e.target.value)}
             placeholder="Message..."
-            autoSize={{ minRows: 3, maxRows: 5 }}
+            autoSize={{ maxRows: 4, minRows: 3 }}
+            className="w-10/12 h-fit"
           />
           <Button
             onClick={() => {
@@ -118,9 +132,11 @@ const App: React.FC<Compose> = ({
             }}
             disabled={disabled}
             style={{ backgroundColor: COLORS.secondary, color: 'white' }}
+            className="rounded-full "
           >
-            <p>Send</p>
+            Send
           </Button>
+          {/* </Space> */}
         </div>
       </Space>
 

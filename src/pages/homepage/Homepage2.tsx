@@ -12,6 +12,7 @@ import React, { useContext, createContext, useState } from 'react';
 // import type { MenuProps } from 'antd';
 import {
   Layout,
+  Space,
   //  Menu, theme
 } from 'antd';
 // import useFetch from '../../hooks/useFetch';
@@ -25,7 +26,6 @@ import { authContext } from '../../App';
 import { getNameFromUser, queryServer } from '../../utils/types/helper/helper';
 import { userFromDb } from '../../models/user.models';
 import { COLORS } from '../../constants/constants';
-import useLocalStorage from '../../hooks/useLocalStorage';
 
 const {
   // Header, Content, Footer,
@@ -55,8 +55,6 @@ interface ThreadContext {
 }
 
 const App: React.FC = () => {
-  const [, setAccess] = useLocalStorage({ name: 'access' });
-  const [, setRefresh] = useLocalStorage({ name: 'refresh' });
   const { user, setUser, unreadCount, setAuth } = useContext(authContext);
 
   const [currentThreadId, setCurrentThreadId] = useState<string | undefined>(
@@ -86,60 +84,64 @@ const App: React.FC = () => {
 
   const logout: () => void = () => {
     setLoading(true);
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    setAuth && setAuth(false);
+    setUser && setUser(undefined);
     queryServer({ method: 'post', url: '/logout', formdata: null })
       .then((res) => {
-        if (res.data) {
-          setAuth && setAuth(false);
-          setAccess('');
-          setRefresh('');
-          setUser && setUser(undefined);
+        console.log('+++' + JSON.stringify(res));
+        if (res.status === 200) {
+          setLoading(false);
         }
       })
       .catch((err) => {
         console.log(err);
-      })
-      .finally(() => {
         setLoading(false);
       });
   };
 
   return (
-    <Layout className="flex flex-col h-screen font-sans">
-      <Layout>
+    <Layout className="flex flex-col h-full font-sans">
+      <Layout className="h-fit">
         <div
           style={{ backgroundColor: COLORS.primary }}
-          className=" h-min flex p-10 flex-row font-mono text-2xl justify-between text-slate-50"
+          className="align-middle h-min flex p-5 flex-shrink font-mono text-lg justify-between text-slate-50"
         >
-          <h4>{`Hi ${getNameFromUser(
-            user?.email as string
-          ).toLocaleUpperCase()}`}</h4>
-          <h5>{`You have ${
-            unreadCount && unreadCount.unread > 0 ? unreadCount.unread : 0
-          } unread messages`}</h5>
-          <Button
-            type="primary"
-            style={{ backgroundColor: COLORS.secondary }}
-            icon={<PoweroffOutlined />}
-            loading={loading}
-            onClick={logout}
-          >
-            Logout
-          </Button>
+          <Space className="w-full flex justify-evenly">
+            <h4>{`Hi ${getNameFromUser(
+              user?.email as string
+            ).toLocaleUpperCase()}`}</h4>
+            <h5>{`You have ${
+              unreadCount && unreadCount.unread > 0 ? unreadCount.unread : 0
+            } unread messages`}</h5>
+            <Button
+              type="primary"
+              style={{ backgroundColor: COLORS.secondary }}
+              icon={<PoweroffOutlined />}
+              loading={loading}
+              onClick={() => {
+                logout();
+              }}
+            >
+              Logout
+            </Button>
+          </Space>
         </div>
       </Layout>
       <Layout hasSider className="h-full">
         <Sider
           style={{
             overflow: 'auto',
-            height: 'in-content',
+            height: '100%',
             position: 'initial',
             left: 0,
             top: 0,
             bottom: 0,
             backgroundColor: 'gray',
           }}
-          width={'fit-content'}
-          className="row-span-4 max-h-fit"
+          // width={'min-content'}
+          className="max-h-fit min-w-full"
         >
           <div className="demo-logo-vertical" />
           <div className="h-5/6">
@@ -151,7 +153,7 @@ const App: React.FC = () => {
           </div>
           {/* <div>Hey</div> */}
         </Sider>
-        <Layout className="p-10 border-slate-500 border-2">
+        <Layout className="p-2 border-slate-500 border-2">
           {/* <div>Hi!</div> */}
           {/* <div className="flex flex-col h-full"> */}
           {/* <Space

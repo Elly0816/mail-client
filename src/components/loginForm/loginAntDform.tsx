@@ -20,7 +20,7 @@ export interface loginFormInput {
 
 const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
   const { setAuth, setUser } = useContext(authContext) as authContextType;
-  const { meth, toggle } = useContext(methContext) as methContextType;
+  const { toggle } = useContext(methContext) as methContextType;
   const onFinish = (values: Inputs) => {
     setLoading(true);
 
@@ -73,15 +73,6 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
           placeholder="Password"
         />
       </Form.Item>
-      {/* <Form.Item>
-        <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-
-        <a className="login-form-forgot" href="">
-          Forgot password
-        </a>
-      </Form.Item> */}
 
       <Form.Item>
         <div className="flex flex-row justify-evenly">

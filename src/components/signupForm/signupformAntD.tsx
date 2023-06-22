@@ -4,7 +4,6 @@ import { authContext, authContextType, methContextType } from '../../App';
 import { userFromDb } from '../../models/user.models';
 import { queryServer } from '../../utils/types/helper/helper';
 import { AxiosError } from 'axios';
-import { Link } from 'react-router-dom';
 import { methContext } from '../../App';
 import { COLORS } from '../../constants/constants';
 
@@ -34,7 +33,7 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
 
   const [form] = Form.useForm();
 
-  const { meth, toggle } = useContext(methContext) as methContextType;
+  const { toggle } = useContext(methContext) as methContextType;
 
   const onFinish = (values: Inputs) => {
     setLoading(true);

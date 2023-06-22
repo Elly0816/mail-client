@@ -1,10 +1,8 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { List } from 'antd';
 import ThreadCard from './threadCard';
 import { authContext } from '../../App';
-import useFetch from '../../hooks/useFetch';
 import { threadFromDb } from '../../models/thread.models';
-import { userFromDb } from '../../models/user.models';
 import { COLORS } from '../../constants/constants';
 
 export interface Thread {

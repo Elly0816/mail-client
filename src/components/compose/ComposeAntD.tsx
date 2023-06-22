@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Input, Layout, Space } from 'antd';
 import { queryServer } from '../../utils/types/helper/helper';
-import { threadContext } from '../../pages/homepage/Homepage2';
 import { userFromDb } from '../../models/user.models';
 import { COLORS } from '../../constants/constants';
 
@@ -11,12 +10,14 @@ interface Compose {
   otherUserEmail?: string;
   currentThreadId?: string;
   setUser: (user: userFromDb) => void;
+  setOtherUserEmail?: () => void;
 }
 
 const App: React.FC<Compose> = ({
   otherUserEmail,
   currentThreadId,
   setUser,
+  setOtherUserEmail,
 }) => {
   const [emailTo, setEmailTo] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
@@ -77,6 +78,15 @@ const App: React.FC<Compose> = ({
       >
         {/* <> */}
         {/* {!otherUserEmail && ( */}
+        {otherUserEmail && (
+          <Button
+            className="m-3"
+            style={{ color: 'whitesmoke', backgroundColor: COLORS.secondary }}
+            onClick={setOtherUserEmail}
+          >
+            New Message
+          </Button>
+        )}
         <TextArea
           placeholder="Email to: ..."
           onChange={(e) => setEmailTo(e.target.value)}

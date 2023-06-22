@@ -4,7 +4,6 @@ import useFetch from '../../hooks/useFetch';
 import { threadFromDb } from '../../models/thread.models';
 import { userFromDb } from '../../models/user.models';
 import { authContext } from '../../App';
-import ErrorIcon from '@mui/icons-material/Error';
 import { getNameFromUser } from '../../utils/types/helper/helper';
 import { threadContext } from '../../pages/homepage/Homepage2';
 import { COLORS } from '../../constants/constants';
@@ -45,7 +44,7 @@ const App: React.FC<{
     data?.user && setUser && setUser(data?.user);
     data?.unread && addUnread(data.unread as number);
     // data?.otherUser && setUserTo && setUserTo(data.otherUser);
-  }, [data, setUser, currentThreadId]);
+  }, [data, setUser, currentThreadId, error, loading, addUnread]);
 
   return (
     <Card

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Avatar, Card, Divider, Empty, List, Skeleton, Spin } from 'antd';
+import { Card, Divider, Empty, List, Skeleton, Spin } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import useFetch from '../../hooks/useFetch';
 import { messageFromDb } from '../../models/message.models';
@@ -10,11 +10,10 @@ interface Messages {
 }
 
 const App: React.FC<Messages> = ({ id }) => {
-  const {
-    data: messagesData,
-    error,
-    loading,
-  } = useFetch({ method: 'get', path: `/message/${id}` });
+  const { data: messagesData, loading } = useFetch({
+    method: 'get',
+    path: `/message/${id}`,
+  });
   const [data, setData] = useState<messageFromDb[]>([]);
 
   const { setUser } = useContext(authContext);
@@ -24,7 +23,7 @@ const App: React.FC<Messages> = ({ id }) => {
       setData(messagesData.message as messageFromDb[]);
       setUser && setUser(messagesData.user);
     }
-  }, [messagesData]);
+  }, [messagesData, setUser]);
 
   return id ? (
     !loading ? (

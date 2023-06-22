@@ -12,7 +12,6 @@ import React, { useContext, createContext, useState } from 'react';
 // import type { MenuProps } from 'antd';
 import {
   Layout,
-  Space,
   //  Menu, theme
 } from 'antd';
 // import useFetch from '../../hooks/useFetch';
@@ -56,8 +55,8 @@ interface ThreadContext {
 }
 
 const App: React.FC = () => {
-  const [access, setAccess] = useLocalStorage({ name: 'access' });
-  const [refresh, setRefresh] = useLocalStorage({ name: 'refresh' });
+  const [, setAccess] = useLocalStorage({ name: 'access' });
+  const [, setRefresh] = useLocalStorage({ name: 'refresh' });
   const { user, setUser, unreadCount, setAuth } = useContext(authContext);
 
   const [currentThreadId, setCurrentThreadId] = useState<string | undefined>(
@@ -87,7 +86,7 @@ const App: React.FC = () => {
 
   const logout: () => void = () => {
     queryServer({ method: 'get', url: '/logout', formdata: null })
-      .then((res) => {
+      .then(() => {
         setLoading(true);
         setAuth && setAuth(false);
         setAccess('');
@@ -164,6 +163,10 @@ const App: React.FC = () => {
             setUser={refreshUser}
             otherUserEmail={userTo}
             currentThreadId={currentThreadId}
+            setOtherUserEmail={() => {
+              setUserTo(undefined);
+              setCurrentThreadId(undefined);
+            }}
           />
           {/* </Space> */}
           {/* </div> */}

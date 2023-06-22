@@ -5,7 +5,7 @@ import {
 } from 'react';
 import LoginForm from '../../components/loginForm/loginAntDform';
 import React from 'react';
-import './LoginPage.css';
+import './loginPage.css';
 // import { authContext } from '../../App';
 // import { useNavigate } from 'react-router-dom';
 // import Loading from '../../components/loading/Loading';

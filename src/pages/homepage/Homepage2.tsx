@@ -85,13 +85,15 @@ const App: React.FC = () => {
   };
 
   const logout: () => void = () => {
-    queryServer({ method: 'get', url: '/logout', formdata: null })
-      .then(() => {
-        setLoading(true);
-        setAuth && setAuth(false);
-        setAccess('');
-        setRefresh('');
-        setUser && setUser(undefined);
+    setLoading(true);
+    queryServer({ method: 'post', url: '/logout', formdata: null })
+      .then((res) => {
+        if (res.data) {
+          setAuth && setAuth(false);
+          setAccess('');
+          setRefresh('');
+          setUser && setUser(undefined);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -103,16 +105,16 @@ const App: React.FC = () => {
 
   return (
     <Layout className="flex flex-col h-screen font-sans">
-      <Layout className="h-fit">
+      <Layout>
         <div
           style={{ backgroundColor: COLORS.primary }}
-          className="flex p-10 flex-row font-mono text-2xl justify-between text-slate-50"
+          className=" h-min flex p-10 flex-row font-mono text-2xl justify-between text-slate-50"
         >
           <h4>{`Hi ${getNameFromUser(
             user?.email as string
           ).toLocaleUpperCase()}`}</h4>
           <h5>{`You have ${
-            unreadCount && unreadCount > 0 ? unreadCount : 0
+            unreadCount && unreadCount.unread > 0 ? unreadCount.unread : 0
           } unread messages`}</h5>
           <Button
             type="primary"

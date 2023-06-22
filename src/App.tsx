@@ -5,7 +5,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { createContext } from 'react';
 import { userFromDb } from './models/user.models';
 import SignUpPage from './pages/signuppage/signupPage';
-import { Layout, Spin, message } from 'antd';
+import {
+  Layout,
+  Spin,
+  // message
+} from 'antd';
 import useFetch from './hooks/useFetch';
 import { COLORS } from './constants/constants';
 
@@ -14,8 +18,8 @@ export interface authContextType {
   auth?: boolean;
   setUser?: React.Dispatch<React.SetStateAction<userFromDb | undefined>>;
   setAuth?: React.Dispatch<React.SetStateAction<boolean>>;
-  addUnread?: (unread: number) => void;
-  unreadCount?: number;
+  addUnread?: (threadId: string, unread: number) => void;
+  unreadCount?: { threads: string[]; unread: number };
 }
 
 export interface methContextType {
@@ -26,8 +30,11 @@ export interface methContextType {
 function App() {
   const [user, setUser] = useState<userFromDb | undefined>();
   const [meth, setMeth] = useState<'login' | 'signup'>('signup');
-  const [messageApi, contextHolder] = message.useMessage();
-  const [unreadCount, setUnreadCount] = useState<number>(0);
+  // const [messageApi, contextHolder] = message.useMessage();
+  const [unreadCount, setUnreadCount] = useState<{
+    threads: string[];
+    unread: number;
+  }>({ threads: [], unread: 0 });
 
   // const successNotification = () => {
   //   messageApi.open({
@@ -52,7 +59,11 @@ function App() {
 
   const [auth, setAuth] = useState<boolean>(false);
 
-  const { data, error, loading } = useFetch({ method: 'get', path: '' });
+  const {
+    data,
+    //  error,
+    loading,
+  } = useFetch({ method: 'get', path: '' });
 
   const toggle = useCallback(() => {
     if (meth == 'login') {
@@ -71,21 +82,32 @@ function App() {
     }
   }, [data]);
 
-  const addUnread: (unread: number) => void = (unread) => {
-    setUnreadCount((unreadCount) => unreadCount + unread);
+  const addUnread: (threadId: string, unreadCount: number) => void = (
+    threadId,
+    unreadCount
+  ) => {
+    setUnreadCount(({ threads, unread }) => {
+      if (threads.includes(threadId)) {
+        return { threads, unread };
+      } else {
+        threads.push(threadId);
+        unread += unreadCount;
+        return { threads, unread };
+      }
+    });
   };
 
   const main = (
     <authContext.Provider
       value={{ auth, user, setUser, setAuth, addUnread, unreadCount }}
     >
-      {contextHolder}
+      {/* {contextHolder} */}
       {auth ? (
         <HomePage />
       ) : (
         // <div>Hey!</div>
         <methContext.Provider value={{ meth, toggle }}>
-          {contextHolder}
+          {/* {contextHolder} */}
           <Layout
             className="py-7 h-screen"
             style={{ backgroundColor: COLORS.primary }}
@@ -109,7 +131,7 @@ function App() {
 
   return (
     <authContext.Provider value={{ auth, user, setUser, setAuth }}>
-      {contextHolder}
+      {/* {contextHolder} */}
       {child}
     </authContext.Provider>
   );

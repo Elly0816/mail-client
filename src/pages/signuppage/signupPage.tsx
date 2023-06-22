@@ -1,10 +1,16 @@
-import { useContext, Fragment, useEffect, useState, useMemo } from 'react';
+import {
+  //  useContext,
+  //   Fragment,
+  //    useEffect,
+  useState,
+  // useMemo
+} from 'react';
 import SignUpForm from '../../components/signupForm/signupformAntD';
 import React from 'react';
 import './signupPage.css';
-import { authContext } from '../../App';
-import { useNavigate } from 'react-router-dom';
-import Loading from '../../components/loading/Loading';
+// import { authContext } from '../../App';
+// import { useNavigate } from 'react-router-dom';
+// import Loading from '../../components/loading/Loading';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface loginPageProps {}

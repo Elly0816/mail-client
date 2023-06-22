@@ -11,10 +11,10 @@ import { COLORS } from '../../constants/constants';
 const App: React.FC<{
   threadId: string;
   addUnread: (unread: number) => void;
-}> = ({ threadId, addUnread }) => {
-  const { setUser } = useContext(authContext);
+}> = ({ threadId }) => {
+  const { setUser, addUnread } = useContext(authContext);
   const {
-    currentThreadId,
+    // currentThreadId,
     setThread,
     changeOtherUser: setUserTo,
   } = useContext(threadContext);
@@ -42,9 +42,9 @@ const App: React.FC<{
   useEffect(() => {
     console.log(data, error, loading);
     data?.user && setUser && setUser(data?.user);
-    data?.unread && addUnread(data.unread as number);
+    data?.unread && addUnread && addUnread(threadId, data.unread);
     // data?.otherUser && setUserTo && setUserTo(data.otherUser);
-  }, [data, setUser, currentThreadId, error, loading, addUnread]);
+  }, [data, error, loading, setUser]);
 
   return (
     <Card

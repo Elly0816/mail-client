@@ -17,7 +17,7 @@ const LoginPage: React.FC<loginPageProps> = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   return (
-    <div className="w-2/6 m-auto mt-20 p-10 bg-slate-300 rounded-lg">
+    <div className="w-4/6 m-auto mt-20 p-10 bg-slate-300 rounded-lg">
       <LoginForm loading={loading} setLoading={setLoading} />
     </div>
   );

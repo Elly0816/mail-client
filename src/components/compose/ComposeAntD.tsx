@@ -71,7 +71,7 @@ const App: React.FC<Compose> = ({
   return (
     <Layout className="bottom-0" style={{ height: '40%' }}>
       <Space
-        className="border-10 border-black"
+        className="border-10 border-black h-fit"
         direction="vertical"
         size="large"
         // style={{ display: 'flex' }}

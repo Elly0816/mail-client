@@ -30,7 +30,7 @@ const SignUpPage: React.FC<loginPageProps> = () => {
   // return !loading ? (
   return (
     <div className="w-4/6 m-auto mt-20 p-10 bg-slate-300 rounded-lg">
-      <SignUpForm loading={loading} setLoading={setLoading} />;
+      <SignUpForm loading={loading} setLoading={setLoading} />
     </div>
   );
 

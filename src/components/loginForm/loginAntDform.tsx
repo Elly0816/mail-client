@@ -74,28 +74,28 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
         />
       </Form.Item>
 
-      <Form.Item className="m-auto">
-        <div className="flex flex-col justify-evenly align-middle">
-          <Button
-            style={{ backgroundColor: COLORS.secondary }}
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-          >
-            Log in
-          </Button>
-          <h3
-            style={{ color: COLORS.secondary }}
-            className="hover:cursor-pointer"
-            // type="primary"
-            onClick={() => {
-              toggle();
-            }}
-          >
-            SignUp Instead
-          </h3>
-        </div>
-      </Form.Item>
+      {/* <Form.Item className="m-auto"> */}
+      <div className="w-full m-0">
+        <Button
+          style={{ backgroundColor: COLORS.secondary }}
+          type="primary"
+          htmlType="submit"
+          className="login-form-button"
+        >
+          Log in
+        </Button>
+        <h3
+          style={{ color: COLORS.secondary }}
+          className="hover:cursor-pointer"
+          // type="primary"
+          onClick={() => {
+            toggle();
+          }}
+        >
+          SignUp Instead
+        </h3>
+      </div>
+      {/* </Form.Item> */}
     </Form>
   );
 };

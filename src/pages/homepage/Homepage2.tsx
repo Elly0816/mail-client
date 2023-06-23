@@ -102,7 +102,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <Layout className="flex flex-col h-full font-sans">
+    <Layout className="flex flex-col h-max font-sans">
       <Layout className="h-fit">
         <div
           style={{ backgroundColor: COLORS.primary }}
@@ -129,11 +129,14 @@ const App: React.FC = () => {
           </Space>
         </div>
       </Layout>
-      <Layout hasSider className="h-full">
+      <Layout
+        hasSider
+        // className="h-max"
+      >
         <Sider
           style={{
             overflow: 'auto',
-            height: '100%',
+            // height: '100vh',
             position: 'initial',
             left: 0,
             top: 0,
@@ -141,7 +144,7 @@ const App: React.FC = () => {
             backgroundColor: 'gray',
           }}
           // width={'min-content'}
-          className="max-h-fit min-w-full"
+          className="min-w-full"
         >
           <div className="demo-logo-vertical" />
           <div className="h-5/6">

@@ -63,10 +63,8 @@ const App: React.FC<{
               canRemove && data.unread > 0 ? 'font-extrabold' : 'font-medium'
             } justify-between	`}
           >
-            <div className="text-container">
-              <h4 className="animate">{`Thread with ${getNameFromUser(
-                data.otherUser
-              )}`}</h4>
+            <div className="text-start">
+              <h4>{`Thread with ${getNameFromUser(data.otherUser)}`}</h4>
               {!canRemove ||
                 (data.unread > 0 && <h6>{`${data.unread} Unread`}</h6>)}
             </div>
@@ -104,7 +102,7 @@ const App: React.FC<{
             className="flex flex-grow m-0 px-0 flex-col"
             // style={{ backgroundColor: COLORS.base }}
           >
-            <div className="flex flex-row font-semibold justify-center">
+            <div className="flex flex-row font-semibold justify-start">
               <span>
                 {data ? (
                   data.message.lastMessage &&

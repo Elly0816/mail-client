@@ -110,7 +110,7 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
   };
 
   return (
-    <Layout className="flex flex-col h-max font-sans">
+    <Layout className="flex flex-col h-max">
       <Layout className="h-fit">
         <div
           style={{
@@ -118,9 +118,9 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
             color: COLORS.primary,
             borderColor: COLORS.primary,
           }}
-          className="align-middle h-min flex p-5 flex-shrink font-bold text-lg justify-between border-y-2"
+          className="align-middle h-min flex p-5 flex-shrink font-bold text-lg justify-around border-y-2"
         >
-          <Space className="w-full flex justify-evenly">
+          <Space className="w-full flex justify-between">
             <h4>{`Hi ${getNameFromUser(
               user?.email as string
             ).toLocaleUpperCase()}`}</h4>
@@ -129,21 +129,22 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
             } unread message${
               unreadCount && unreadCount.unread > 1 ? 's' : ''
             }`}</h5>
-            {userTo && (
-              <Button
-                className="m-3"
-                style={{
-                  color: 'whitesmoke',
-                  backgroundColor: COLORS.secondary,
-                }}
-                onClick={() => {
-                  setUserTo(undefined);
-                  setCurrentThreadId(undefined);
-                }}
-              >
-                Click to start a new thread
-              </Button>
-            )}
+            {/* {userTo && ( */}
+            <Button
+              className="m-3"
+              style={{
+                color: 'whitesmoke',
+                backgroundColor: COLORS.secondary,
+                display: shouldDisplay(userTo as string),
+              }}
+              onClick={() => {
+                setUserTo(undefined);
+                setCurrentThreadId(undefined);
+              }}
+            >
+              Click to start a new thread
+            </Button>
+            {/* // )} */}
             <Button
               type="primary"
               style={{ backgroundColor: COLORS.secondary }}
@@ -221,3 +222,11 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const threadContext = createContext<ThreadContext>({});
 export default App;
+
+const shouldDisplay: (some: string) => string = (some) => {
+  if (some) {
+    return '';
+  } else {
+    return 'none';
+  }
+};

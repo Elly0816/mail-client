@@ -1,7 +1,7 @@
 export enum COLORS {
-  base = '#E7CEA6',
+  base = '#F9F7F7',
   secondary = '#5A96E3',
-  primary = '#0A6EBD',
-  accent = '#A1C2F1',
+  primary = '#1B262C',
+  accent = '#3282B8',
   baseHover = '#746854',
 }

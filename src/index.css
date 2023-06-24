@@ -1,6 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik&family=Source+Serif+4:opsz@8..60&family=Work+Sans&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+}
 
 /* html,
 div,
@@ -19,6 +32,13 @@ p,
 
 body {
   height: 100vh;
+}
+
+div {
+  font-family: 'Rubik', sans-serif;
+  font-family: 'Source Serif 4', serif;
+  font-family: 'Work Sans', sans-serif;
+  /* color: #0004; */
 }
 
 /*

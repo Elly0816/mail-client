@@ -17,11 +17,14 @@ const App: React.FC = () => {
 
   return (
     <List
-      className="oveflow-y h-screen w-auto"
+      className="overflow-y-scroll h-screen "
       style={{ backgroundColor: COLORS.base }}
       dataSource={user?.threads}
       renderItem={(id: string) => (
-        <div style={{ borderColor: COLORS.accent }} className="border-y-4 py-2">
+        <div
+          style={{ borderColor: COLORS.accent }}
+          //  className="border-y-4 py-2"
+        >
           <ThreadCard
             addUnread={addUnread as () => void}
             threadId={id}

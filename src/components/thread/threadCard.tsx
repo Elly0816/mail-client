@@ -10,7 +10,7 @@ import {
 } from '../../utils/types/helper/helper';
 import { threadContext } from '../../pages/homepage/Homepage2';
 import { COLORS } from '../../constants/constants';
-// import './Thread.css';
+import './Thread.css';
 
 const App: React.FC<{
   threadId: string;
@@ -51,6 +51,7 @@ const App: React.FC<{
   }, [data, error, loading, setUser]);
 
   const [canRemove, setCanRemove] = useState<boolean>(true);
+  const { currentThreadId } = useContext(threadContext);
 
   return (
     <Card
@@ -73,16 +74,18 @@ const App: React.FC<{
         )
       }
       bordered={true}
-      style={{
-        width: '100%',
-        height: 200,
-        borderBottom: 3,
-        borderTop: 3,
-        color: COLORS.primary,
-        borderColor: COLORS.accent,
-        backgroundColor: COLORS.base,
-      }}
-      className=" rounded-none p-0 hover:cursor-pointer"
+      // style={{
+      //   width: '100%',
+      //   height: 200,
+      //   borderBottom: 3,
+      //   borderTop: 3,
+      //   color: COLORS.primary,
+      //   borderColor: COLORS.accent,
+      //   backgroundColor: COLORS.base,
+      // }}
+      className={`threadCard rounded-none p-0 hover:cursor-pointer ${
+        currentThreadId && currentThreadId == data?.message._id && 'isThread'
+      } `}
       loading={loading}
       onClick={() => {
         setThread && setThread(threadId);
@@ -99,7 +102,7 @@ const App: React.FC<{
           // <ErrorIcon />
           <div
             className="flex flex-grow m-0 px-0 flex-col"
-            style={{ backgroundColor: COLORS.base }}
+            // style={{ backgroundColor: COLORS.base }}
           >
             <div className="flex flex-row font-semibold justify-center">
               <span>
@@ -112,14 +115,14 @@ const App: React.FC<{
               </span>
             </div>
             <div>
-              {data ? (
-                <div className="flex flex-row text-xs justify-between">
-                  <p>{transformDate(data.message.lastModified).date}</p>
-                  <p>{transformDate(data.message.lastModified).time}</p>
-                </div>
-              ) : (
-                <Spin />
-              )}
+              {/* {data ? ( */}
+              <div className="flex flex-row text-xs justify-between">
+                <p>{transformDate(data.message.lastModified).date}</p>
+                <p>{transformDate(data.message.lastModified).time}</p>
+              </div>
+              {/* ) : ( */}
+              {/* <Spin />
+              )} */}
             </div>
             {/* <p>{data.name.last}</p> */}
           </div>

@@ -126,7 +126,9 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
             ).toLocaleUpperCase()}`}</h4>
             <h5>{`You have ${
               unreadCount && unreadCount.unread > 0 ? unreadCount.unread : 0
-            } unread messages`}</h5>
+            } unread message${
+              unreadCount && unreadCount.unread > 1 ? 's' : ''
+            }`}</h5>
             {userTo && (
               <Button
                 className="m-3"
@@ -156,32 +158,34 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
           </Space>
         </div>
       </Layout>
-      <Layout
-        hasSider
-        // className="h-max"
-      >
+      <Layout hasSider className="flex flex-col">
         <Sider
+          width={'25vw'}
           style={{
-            overflow: 'auto',
+            overflow: 'scroll',
+            // scrollbarWidth: 'thin',
             // height: '100vh',
-            position: 'initial',
+            // position: 'initial',
             left: 0,
             top: 0,
             bottom: 0,
             backgroundColor: COLORS.base,
-            borderColor: COLORS.primary,
+            // borderColor: COLORS.primary,
+            margin: 0,
+            padding: 0,
+            // maxWidth: '25%',
           }}
           // width={'min-content'}
-          className="min-w-full border-6"
+          // className="border-6"
         >
-          <div className="demo-logo-vertical" />
-          <div className="h-5/6">
-            <threadContext.Provider
-              value={{ currentThreadId, setThread, changeOtherUser }}
-            >
-              <ThreadList />
-            </threadContext.Provider>
-          </div>
+          {/* <div className="demo-logo-vertical" /> */}
+          {/* <div className="h-5/6"> */}
+          <threadContext.Provider
+            value={{ currentThreadId, setThread, changeOtherUser }}
+          >
+            <ThreadList />
+          </threadContext.Provider>
+          {/* </div> */}
           {/* <div>Hey</div> */}
         </Sider>
         <Layout

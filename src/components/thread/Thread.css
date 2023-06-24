@@ -1,47 +1,8 @@
-.thread:hover {
-  cursor: pointer;
-  background-color: #746854;
+.threadCard:hover {
+  background-color: #b7c4cf;
 }
 
-/* center {
-  display: grid;
-  gap: 20px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-} */
-
-.text-container {
-  padding: 5px 10px;
-  min-width: 0;
-  /* font-size: 2rem; */
-  color: #708090;
-  white-space: nowrap;
-  overflow: visible;
-  position: relative;
-  border: 1px solid #708090;
-  border-radius: 5px;
-  span {
-    display: inline-block;
-  }
-}
-
-.animate {
-  position: relative;
-  animation: leftright 3s infinite alternate ease-in-out;
-}
-
-@keyframes leftright {
-  0%,
-  20% {
-    transform: translateX(0%);
-    left: 0%;
-  }
-  80%,
-  100% {
-    transform: translateX(-100%);
-    left: 100%;
-  }
+.isThread {
+  background-color: #b7c4cf;
+  color: #0f4c75;
 }

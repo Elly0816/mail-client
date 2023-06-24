@@ -11,7 +11,7 @@ import {
   // message
 } from 'antd';
 import useFetch from './hooks/useFetch';
-import { COLORS } from './constants/constants';
+// import { COLORS } from './constants/constants';
 
 export interface authContextType {
   user?: userFromDb | undefined;
@@ -20,6 +20,7 @@ export interface authContextType {
   setAuth?: React.Dispatch<React.SetStateAction<boolean>>;
   addUnread?: (threadId: string, unread: number) => void;
   unreadCount?: { threads: string[]; unread: number };
+  removeUnread?: (locUnrea: number) => void;
 }
 
 export interface methContextType {
@@ -105,20 +106,39 @@ function App() {
     }
   };
 
+  const removeUnread: (locUnreadCount: number) => void = (locUnreadCount) => {
+    setUnreadCount(({ threads, unread }) => {
+      unread -= locUnreadCount;
+      return { threads, unread };
+    });
+  };
+
   const main = (
     <authContext.Provider
-      value={{ auth, user, setUser, setAuth, addUnread, unreadCount }}
+      value={{
+        auth,
+        user,
+        setUser,
+        setAuth,
+        addUnread,
+        unreadCount,
+        removeUnread,
+      }}
     >
       {/* {contextHolder} */}
       {auth ? (
-        <HomePage />
+        <HomePage
+          setUnreadCount={() => {
+            setUnreadCount({ threads: [], unread: 0 });
+          }}
+        />
       ) : (
         // <div>Hey!</div>
         <methContext.Provider value={{ meth, toggle }}>
           {/* {contextHolder} */}
           <Layout
             className="py-7 h-screen"
-            style={{ backgroundColor: COLORS.primary }}
+            // style={{ backgroundColor: COLORS.base, color: COLORS.accent }}
           >
             {meth == 'login' ? <LoginPage /> : <SignUpPage />}
           </Layout>

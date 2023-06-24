@@ -4,7 +4,11 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import useFetch from '../../hooks/useFetch';
 import { messageFromDb } from '../../models/message.models';
 import { authContext } from '../../App';
-import { getNameFromUser } from '../../utils/types/helper/helper';
+import {
+  getNameFromUser,
+  transformDate,
+} from '../../utils/types/helper/helper';
+import { COLORS } from '../../constants/constants';
 
 interface Messages {
   id?: string;
@@ -65,9 +69,14 @@ const App: React.FC<Messages> = ({ id }) => {
                   </div>
                 }
               >
-                <h3>{item.body}</h3>
-                <br />
-                <p>{item.date.toString()}</p>
+                <div className="font-normal text-base">
+                  <h3>{item.body}</h3>
+                </div>
+                <hr />
+                <div className="font-thin text-xs grid justify-items-end text-end w-fit">
+                  <p>{transformDate(item.date).date}</p>
+                  <p>{transformDate(item.date).time}</p>
+                </div>
               </Card>
             )}
           />
@@ -81,7 +90,12 @@ const App: React.FC<Messages> = ({ id }) => {
   ) : (
     <Empty
       description="Click on a Thread to View message"
-      style={{ height: '60vh' }}
+      style={{
+        height: '60vh',
+        backgroundColor: COLORS.base,
+        color: COLORS.primary,
+        padding: 'auto',
+      }}
     />
   );
 };

@@ -10,14 +10,14 @@ interface Compose {
   otherUserEmail?: string;
   currentThreadId?: string;
   setUser: (user: userFromDb) => void;
-  setOtherUserEmail?: () => void;
+  // setOtherUserEmail?: () => void;
 }
 
 const App: React.FC<Compose> = ({
   otherUserEmail,
   currentThreadId,
   setUser,
-  setOtherUserEmail,
+  // setOtherUserEmail,
 }) => {
   const [emailTo, setEmailTo] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
@@ -69,28 +69,34 @@ const App: React.FC<Compose> = ({
   }, [emailTo, emailMessage, emailTitle]);
 
   return (
-    <Layout className="bottom-0" style={{ height: '40%' }}>
+    <Layout className="bottom-0" style={{}}>
       <Space
-        className="border-10 border-black h-fit"
+        className="border-10 border-black h-full p-5"
         direction="vertical"
         size="large"
-        // style={{ display: 'flex' }}
+        style={{ backgroundColor: COLORS.base }}
       >
         {/* <> */}
         {/* {!otherUserEmail && ( */}
         {otherUserEmail ? (
-          <div className="text-lg">
+          <div
+            className="text-lg font-semibold"
+            style={{ backgroundColor: COLORS.base, color: COLORS.primary }}
+          >
             <h5>{`Continue conversation with: ${otherUserEmail}`}</h5>
-            <Button
+            {/* <Button
               className="m-3"
               style={{ color: 'whitesmoke', backgroundColor: COLORS.secondary }}
               onClick={setOtherUserEmail}
             >
               Click to start a new thread
-            </Button>
+            </Button> */}
           </div>
         ) : (
-          <div className="text-lg">
+          <div
+            className="text-lg font-semibold"
+            style={{ color: COLORS.primary }}
+          >
             <h5>{`Start a new Thread`}</h5>
           </div>
         )}

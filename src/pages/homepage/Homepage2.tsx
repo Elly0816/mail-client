@@ -1,4 +1,4 @@
-import React, { useContext, createContext, useState } from 'react';
+import React, { useContext, createContext, useState, useEffect } from 'react';
 // import {
 //   AppstoreOutlined,
 //   BarChartOutlined,
@@ -54,7 +54,11 @@ interface ThreadContext {
   changeOtherUser?: (email: string) => void;
 }
 
-const App: React.FC = () => {
+interface HomePage {
+  setUnreadCount: () => void;
+}
+
+const App: React.FC<HomePage> = ({ setUnreadCount }) => {
   const { user, setUser, unreadCount, setAuth } = useContext(authContext);
 
   const [currentThreadId, setCurrentThreadId] = useState<string | undefined>(
@@ -69,6 +73,10 @@ const App: React.FC = () => {
   //     return newLoadings;
   //   });
   // };
+
+  useEffect(() => {
+    setUnreadCount();
+  }, []);
 
   const setThread: (id: string) => void = (id) => {
     setCurrentThreadId(id);
@@ -105,8 +113,12 @@ const App: React.FC = () => {
     <Layout className="flex flex-col h-max font-sans">
       <Layout className="h-fit">
         <div
-          style={{ backgroundColor: COLORS.primary }}
-          className="align-middle h-min flex p-5 flex-shrink font-mono text-lg justify-between text-slate-50"
+          style={{
+            backgroundColor: COLORS.base,
+            color: COLORS.primary,
+            borderColor: COLORS.primary,
+          }}
+          className="align-middle h-min flex p-5 flex-shrink font-bold text-lg justify-between border-y-2"
         >
           <Space className="w-full flex justify-evenly">
             <h4>{`Hi ${getNameFromUser(
@@ -115,6 +127,21 @@ const App: React.FC = () => {
             <h5>{`You have ${
               unreadCount && unreadCount.unread > 0 ? unreadCount.unread : 0
             } unread messages`}</h5>
+            {userTo && (
+              <Button
+                className="m-3"
+                style={{
+                  color: 'whitesmoke',
+                  backgroundColor: COLORS.secondary,
+                }}
+                onClick={() => {
+                  setUserTo(undefined);
+                  setCurrentThreadId(undefined);
+                }}
+              >
+                Click to start a new thread
+              </Button>
+            )}
             <Button
               type="primary"
               style={{ backgroundColor: COLORS.secondary }}
@@ -141,10 +168,11 @@ const App: React.FC = () => {
             left: 0,
             top: 0,
             bottom: 0,
-            backgroundColor: 'gray',
+            backgroundColor: COLORS.base,
+            borderColor: COLORS.primary,
           }}
           // width={'min-content'}
-          className="min-w-full"
+          className="min-w-full border-6"
         >
           <div className="demo-logo-vertical" />
           <div className="h-5/6">
@@ -156,7 +184,10 @@ const App: React.FC = () => {
           </div>
           {/* <div>Hey</div> */}
         </Sider>
-        <Layout className="p-2 border-slate-500 border-2">
+        <Layout
+          className="p-2 border-2"
+          style={{ borderColor: COLORS.accent, backgroundColor: COLORS.base }}
+        >
           {/* <div>Hi!</div> */}
           {/* <div className="flex flex-col h-full"> */}
           {/* <Space
@@ -170,10 +201,10 @@ const App: React.FC = () => {
             setUser={refreshUser}
             otherUserEmail={userTo}
             currentThreadId={currentThreadId}
-            setOtherUserEmail={() => {
-              setUserTo(undefined);
-              setCurrentThreadId(undefined);
-            }}
+            // setOtherUserEmail={() => {
+            //   setUserTo(undefined);
+            //   setCurrentThreadId(undefined);
+            // }}
           />
           {/* </Space> */}
           {/* </div> */}

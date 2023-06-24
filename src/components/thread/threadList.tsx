@@ -18,14 +18,16 @@ const App: React.FC = () => {
   return (
     <List
       className="oveflow-y h-screen w-auto"
-      style={{ backgroundColor: COLORS.secondary }}
+      style={{ backgroundColor: COLORS.base }}
       dataSource={user?.threads}
       renderItem={(id: string) => (
-        <ThreadCard
-          addUnread={addUnread as () => void}
-          threadId={id}
-          key={user?.threads.indexOf(id)}
-        />
+        <div style={{ borderColor: COLORS.accent }} className="border-y-4 py-2">
+          <ThreadCard
+            addUnread={addUnread as () => void}
+            threadId={id}
+            key={user?.threads.indexOf(id)}
+          />
+        </div>
       )}
     />
   );

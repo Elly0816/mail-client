@@ -1,10 +1,13 @@
 import { Card, Spin } from 'antd';
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import useFetch from '../../hooks/useFetch';
 import { threadFromDb } from '../../models/thread.models';
 import { userFromDb } from '../../models/user.models';
 import { authContext } from '../../App';
-import { getNameFromUser } from '../../utils/types/helper/helper';
+import {
+  getNameFromUser,
+  transformDate,
+} from '../../utils/types/helper/helper';
 import { threadContext } from '../../pages/homepage/Homepage2';
 import { COLORS } from '../../constants/constants';
 // import './Thread.css';
@@ -13,7 +16,7 @@ const App: React.FC<{
   threadId: string;
   addUnread: (unread: number) => void;
 }> = ({ threadId }) => {
-  const { setUser, addUnread } = useContext(authContext);
+  const { setUser, addUnread, removeUnread } = useContext(authContext);
   const {
     // currentThreadId,
     setThread,
@@ -47,20 +50,24 @@ const App: React.FC<{
     // data?.otherUser && setUserTo && setUserTo(data.otherUser);
   }, [data, error, loading, setUser]);
 
+  const [canRemove, setCanRemove] = useState<boolean>(true);
+
   return (
     <Card
       title={
         data && (
           <div
-            className={`center flex flex-col hover:text-slate-50  ${
-              data.unread > 0 ? 'font-extrabold' : 'font-medium'
+            style={{ color: COLORS.primary }}
+            className={`center flex flex-col  ${
+              canRemove && data.unread > 0 ? 'font-extrabold' : 'font-medium'
             } justify-between	`}
           >
             <div className="text-container">
               <h4 className="animate">{`Thread with ${getNameFromUser(
                 data.otherUser
               )}`}</h4>
-              <h6>{`${data.unread} Unread`}</h6>
+              {!canRemove ||
+                (data.unread > 0 && <h6>{`${data.unread} Unread`}</h6>)}
             </div>
           </div>
         )
@@ -69,14 +76,18 @@ const App: React.FC<{
       style={{
         width: '100%',
         height: 200,
-        borderWidth: 3,
-        borderColor: COLORS.secondary,
-        backgroundColor: COLORS.primary,
+        borderBottom: 3,
+        borderTop: 3,
+        color: COLORS.primary,
+        borderColor: COLORS.accent,
+        backgroundColor: COLORS.base,
       }}
-      className="rounded-none border-y-2 border-slate-500 hover:cursor-pointer hover:bg-gray-500 hover:text-slate-50 p-0"
+      className=" rounded-none p-0 hover:cursor-pointer"
       loading={loading}
       onClick={() => {
         setThread && setThread(threadId);
+        canRemove && removeUnread && removeUnread(data?.unread as number);
+        setCanRemove(false);
         data && setUserTo && setUserTo(data.otherUser);
         // setThread && setThread(currentThreadId as string);
       }}
@@ -88,23 +99,28 @@ const App: React.FC<{
           // <ErrorIcon />
           <div
             className="flex flex-grow m-0 px-0 flex-col"
-            style={{ backgroundColor: COLORS.primary }}
+            style={{ backgroundColor: COLORS.base }}
           >
-            <span>
+            <div className="flex flex-row font-semibold justify-center">
+              <span>
+                {data ? (
+                  data.message.lastMessage &&
+                  data.message.lastMessage.substring(0, 15) + '...'
+                ) : (
+                  <Spin />
+                )}
+              </span>
+            </div>
+            <div>
               {data ? (
-                data.message.lastMessage &&
-                data.message.lastMessage.substring(0, 15) + '...'
+                <div className="flex flex-row text-xs justify-between">
+                  <p>{transformDate(data.message.lastModified).date}</p>
+                  <p>{transformDate(data.message.lastModified).time}</p>
+                </div>
               ) : (
                 <Spin />
               )}
-            </span>
-            <span>
-              {data ? (
-                data.message.lastModified.toString().split('T')[0]
-              ) : (
-                <Spin />
-              )}
-            </span>
+            </div>
             {/* <p>{data.name.last}</p> */}
           </div>
         )

@@ -3,6 +3,8 @@ import { Button, Input, Layout, Space } from 'antd';
 import { queryServer } from '../../utils/types/helper/helper';
 import { userFromDb } from '../../models/user.models';
 import { COLORS } from '../../constants/constants';
+import { messageFromDb } from '../../models/message.models';
+import { threadFromDb } from '../../models/thread.models';
 
 const { TextArea } = Input;
 
@@ -10,6 +12,8 @@ interface Compose {
   otherUserEmail?: string;
   currentThreadId?: string;
   setUser: (user: userFromDb) => void;
+  setMessages: (message: messageFromDb | messageFromDb[] | undefined) => void;
+  setCurrentThreadId: (id: string) => void;
   // setOtherUserEmail?: () => void;
 }
 
@@ -17,6 +21,8 @@ const App: React.FC<Compose> = ({
   otherUserEmail,
   currentThreadId,
   setUser,
+  setMessages,
+  setCurrentThreadId,
   // setOtherUserEmail,
 }) => {
   const [emailTo, setEmailTo] = useState('');
@@ -28,14 +34,6 @@ const App: React.FC<Compose> = ({
 
   const sendEmail: () => void = () => {
     setDisabled(true);
-    console.log(
-      JSON.stringify({
-        title: emailTitle,
-        body: emailMessage,
-        to: emailTo,
-        threadId: currentThreadId,
-      })
-    );
     queryServer({
       method: 'post',
       url: '/message',
@@ -53,6 +51,15 @@ const App: React.FC<Compose> = ({
           setEmailTitle('');
           setEmailMessage('');
           setDisabled(false);
+          console.log(JSON.stringify(res.data.user) + 'xxx');
+          const newMessage: messageFromDb = res.data.message as messageFromDb;
+          const thread = res.data.thread as threadFromDb;
+          setMessages([newMessage]);
+          if (!currentThreadId) {
+            console.log(`in if current == new message`);
+            console.log(JSON.stringify(newMessage));
+            setCurrentThreadId(thread._id);
+          }
         }
       })
       .catch((err) => {

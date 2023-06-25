@@ -11,6 +11,7 @@ import {
   // message
 } from 'antd';
 import useFetch from './hooks/useFetch';
+import { messageFromDb } from './models/message.models';
 // import { COLORS } from './constants/constants';
 
 export interface authContextType {
@@ -36,6 +37,8 @@ function App() {
     threads: string[];
     unread: number;
   }>({ threads: [], unread: 0 });
+
+  const [messages, setMessages] = useState<messageFromDb[]>([]);
 
   // const successNotification = () => {
   //   messageApi.open({
@@ -113,6 +116,22 @@ function App() {
     });
   };
 
+  const changeMessages: (
+    newMessages?: messageFromDb[] | messageFromDb | undefined
+  ) => void = (newMessages?) => {
+    const newData = newMessages;
+    console.log('changing messages: ' + newData);
+    if (newData) {
+      if (Array.isArray(newData)) {
+        setMessages(() => [...newData]);
+      } else {
+        setMessages((messages) => [...messages, newData]);
+      }
+    } else {
+      setMessages([]);
+    }
+  };
+
   const main = (
     <authContext.Provider
       value={{
@@ -131,6 +150,8 @@ function App() {
           setUnreadCount={() => {
             setUnreadCount({ threads: [], unread: 0 });
           }}
+          messages={messages}
+          setMessages={changeMessages}
         />
       ) : (
         // <div>Hey!</div>

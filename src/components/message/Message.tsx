@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Card, Divider, Empty, List, Skeleton, Spin } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import useFetch from '../../hooks/useFetch';
@@ -12,23 +12,33 @@ import { COLORS } from '../../constants/constants';
 
 interface Messages {
   id?: string;
+  setMessages?: (message: messageFromDb[] | messageFromDb | undefined) => void;
+  messages: messageFromDb[];
 }
 
-const App: React.FC<Messages> = ({ id }) => {
-  const { data: messagesData, loading } = useFetch({
+const App: React.FC<Messages> = ({ id, setMessages, messages }) => {
+  const {
+    data: messagesData,
+    loading,
+    error,
+  } = useFetch({
     method: 'get',
     path: `/message/${id}`,
   });
-  const [data, setData] = useState<messageFromDb[]>([]);
+  // const [data, setData] = useState<messageFromDb[]>([]);
 
-  const { setUser, user } = useContext(authContext);
+  const { setUser, user, setAuth } = useContext(authContext);
 
   useEffect(() => {
-    if (messagesData) {
-      setData(messagesData.message as messageFromDb[]);
-      setUser && setUser(messagesData.user);
+    if (messages?.length == 0 && id) {
+      if (error) {
+        setAuth && setAuth(false);
+      } else {
+        setUser && setUser(messagesData.user);
+        setMessages && setMessages(messagesData.message as messageFromDb[]);
+      }
     }
-  }, [messagesData, setUser]);
+  }, [messagesData, error, setAuth]);
 
   return id ? (
     !loading ? (
@@ -43,7 +53,7 @@ const App: React.FC<Messages> = ({ id }) => {
         className="col-span-2 h-3/6"
       >
         <InfiniteScroll
-          dataLength={data?.length ? data.length : 0}
+          dataLength={messages?.length ? messages.length : 0}
           next={() => {
             return null;
           }}
@@ -56,8 +66,8 @@ const App: React.FC<Messages> = ({ id }) => {
           <List
             // className=" h-full"
             style={{ height: '100%' }}
-            loading={loading}
-            dataSource={data}
+            loading={messages.length < 1}
+            dataSource={messages}
             renderItem={(item) => (
               <Card
                 className={`text-left h-1/3 my-10 text-slate-50 ${

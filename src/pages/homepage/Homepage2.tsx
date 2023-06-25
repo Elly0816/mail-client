@@ -1,4 +1,5 @@
-import React, { useContext, createContext, useState, useEffect } from 'react';
+import React, { useContext, createContext, useState } from 'react';
+import CachedIcon from '@mui/icons-material/Cached';
 // import {
 //   AppstoreOutlined,
 //   BarChartOutlined,
@@ -26,6 +27,7 @@ import { authContext } from '../../App';
 import { getNameFromUser, queryServer } from '../../utils/types/helper/helper';
 import { userFromDb } from '../../models/user.models';
 import { COLORS } from '../../constants/constants';
+import { messageFromDb } from '../../models/message.models';
 
 const {
   // Header, Content, Footer,
@@ -52,13 +54,17 @@ interface ThreadContext {
   currentThreadId?: string;
   userTo?: string;
   changeOtherUser?: (email: string) => void;
+  messages?: messageFromDb[];
+  setMessages?: (message?: undefined | messageFromDb[] | messageFromDb) => void;
 }
 
 interface HomePage {
   setUnreadCount: () => void;
+  setMessages: (message?: messageFromDb[] | messageFromDb | undefined) => void;
+  messages: messageFromDb[];
 }
 
-const App: React.FC<HomePage> = ({ setUnreadCount }) => {
+const App: React.FC<HomePage> = ({ setMessages, messages }) => {
   const { user, setUser, unreadCount, setAuth } = useContext(authContext);
 
   const [currentThreadId, setCurrentThreadId] = useState<string | undefined>(
@@ -66,17 +72,10 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [userTo, setUserTo] = useState<string>();
-  // const enterLoading = (index: number) => {
-  //   setLoadings((prevLoadings) => {
-  //     const newLoadings = [...prevLoadings];
-  //     newLoadings[index] = true;
-  //     return newLoadings;
-  //   });
-  // };
 
-  useEffect(() => {
-    setUnreadCount();
-  }, []);
+  // useEffect(() => {
+  //   setUnreadCount();
+  // }, []);
 
   const setThread: (id: string) => void = (id) => {
     setCurrentThreadId(id);
@@ -105,6 +104,24 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
+      });
+  };
+
+  const refreshPage: () => void = () => {
+    setLoading(true);
+    queryServer({ method: 'get', formdata: null, url: '/' })
+      .then((res) => {
+        if (res.data.user) {
+          setUser && setUser(res.data.user);
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          setAuth && setAuth(false);
+        }
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -145,6 +162,20 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
               Click to start a new thread
             </Button>
             {/* // )} */}
+
+            <Button
+              style={{ backgroundColor: COLORS.secondary }}
+              title="Refresh thread"
+              onClick={refreshPage}
+            >
+              <CachedIcon
+                className="hover:cursor-pointer"
+                style={{
+                  color: COLORS.base,
+                  // backgroundColor: COLORS.secondary,
+                }}
+              />
+            </Button>
             <Button
               type="primary"
               style={{ backgroundColor: COLORS.secondary }}
@@ -182,7 +213,13 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
           {/* <div className="demo-logo-vertical" /> */}
           {/* <div className="h-5/6"> */}
           <threadContext.Provider
-            value={{ currentThreadId, setThread, changeOtherUser }}
+            value={{
+              currentThreadId,
+              setThread,
+              changeOtherUser,
+              setMessages,
+              messages,
+            }}
           >
             <ThreadList />
           </threadContext.Provider>
@@ -201,11 +238,17 @@ const App: React.FC<HomePage> = ({ setUnreadCount }) => {
             style={{ display: 'flex' }}
             className="h-screen"
           > */}
-          <Message id={currentThreadId} />
+          <Message
+            id={currentThreadId}
+            setMessages={setMessages}
+            messages={messages}
+          />
           <Compose
             setUser={refreshUser}
             otherUserEmail={userTo}
-            currentThreadId={currentThreadId}
+            // currentThreadId={currentThreadId}
+            setMessages={setMessages}
+            setCurrentThreadId={setThread}
             // setOtherUserEmail={() => {
             //   setUserTo(undefined);
             //   setCurrentThreadId(undefined);

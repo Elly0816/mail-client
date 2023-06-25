@@ -63,11 +63,7 @@ function App() {
 
   const [auth, setAuth] = useState<boolean>(false);
 
-  const {
-    data,
-    //  error,
-    loading,
-  } = useFetch({ method: 'get', path: '' });
+  const { data, error, loading } = useFetch({ method: 'get', path: '' });
 
   const toggle = useCallback(() => {
     if (meth == 'login') {
@@ -82,7 +78,9 @@ function App() {
       setUser(data.user);
       setAuth(true);
     } else {
-      setAuth(false);
+      if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
+        setAuth(false);
+      }
     }
   }, [data]);
 

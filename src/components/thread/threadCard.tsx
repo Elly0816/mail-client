@@ -64,7 +64,11 @@ const App: React.FC<{
           } justify-between	`}
         >
           <div className="text-start">
-            <h4>{`Thread with ${getNameFromUser(otherUser as string)}`}</h4>
+            <h4>
+              {thread.lastTitle
+                ? `${thread.lastTitle}`
+                : `Thread with ${getNameFromUser(otherUser as string)}`}
+            </h4>
             {!canRemove ||
               (unread && unread > 0 ? (
                 <h6 className="text-green-600">{`${unread} Unread`}</h6>
@@ -87,11 +91,13 @@ const App: React.FC<{
       } `}
       // loading={loading}
       onClick={() => {
-        setThread && setThread(thread._id);
-        canRemove && removeUnread && removeUnread(unread as number);
-        setCanRemove(false);
-        setUserTo && setUserTo(otherUser as string);
-        setMessages && setMessages(undefined);
+        if (currentThreadId != thread._id) {
+          setThread && setThread(thread._id);
+          canRemove && removeUnread && removeUnread(unread as number);
+          setCanRemove(false);
+          setUserTo && setUserTo(otherUser as string);
+          setMessages && setMessages(undefined);
+        }
         // setThread && setThread(currentThreadId as string);
       }}
     >

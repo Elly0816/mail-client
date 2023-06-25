@@ -246,7 +246,7 @@ const App: React.FC<HomePage> = ({ setMessages, messages }) => {
           <Compose
             setUser={refreshUser}
             otherUserEmail={userTo}
-            // currentThreadId={currentThreadId}
+            currentThreadId={currentThreadId}
             setMessages={setMessages}
             setCurrentThreadId={setThread}
             // setOtherUserEmail={() => {

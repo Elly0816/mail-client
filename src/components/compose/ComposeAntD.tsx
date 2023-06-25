@@ -33,6 +33,7 @@ const App: React.FC<Compose> = ({
   const [disabled, setDisabled] = useState(true);
 
   const sendEmail: () => void = () => {
+    console.log(currentThreadId, 'zzz');
     setDisabled(true);
     queryServer({
       method: 'post',

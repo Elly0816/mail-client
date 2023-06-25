@@ -32,7 +32,9 @@ const App: React.FC<Messages> = ({ id, setMessages, messages }) => {
   useEffect(() => {
     if (messages?.length == 0 && id) {
       if (error) {
-        setAuth && setAuth(false);
+        if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
+          setAuth && setAuth(false);
+        }
       } else {
         setUser && setUser(messagesData.user);
         setMessages && setMessages(messagesData.message as messageFromDb[]);

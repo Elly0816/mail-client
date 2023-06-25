@@ -4,4 +4,5 @@ export interface threadFromDb {
   lastModified: Date;
   messages: [string];
   lastMessage: string;
+  lastTitle: string;
 }

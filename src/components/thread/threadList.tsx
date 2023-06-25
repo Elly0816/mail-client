@@ -77,9 +77,11 @@ const App: React.FC = () => {
         setThreads(threads);
         setUser && setUser(data.user);
       })
-      .catch(() => {
-        setAuth && setAuth(false);
-        setUser && setUser(undefined);
+      .catch((error) => {
+        if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
+          setAuth && setAuth(false);
+          setUser && setUser(undefined);
+        }
       })
       .finally(() => {
         setReloading(false);

@@ -117,7 +117,7 @@ const App: React.FC<HomePage> = ({ setMessages, messages }) => {
         }
       })
       .catch((err) => {
-        if (err) {
+        if (!(err?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
           setAuth && setAuth(false);
         }
       })

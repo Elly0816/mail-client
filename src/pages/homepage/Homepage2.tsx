@@ -1,4 +1,4 @@
-import React, { useContext, createContext, useState } from 'react';
+import React, { useContext, createContext, useState, useEffect } from 'react';
 import CachedIcon from '@mui/icons-material/Cached';
 // import {
 //   AppstoreOutlined,
@@ -64,7 +64,7 @@ interface HomePage {
   messages: messageFromDb[];
 }
 
-const App: React.FC<HomePage> = ({ setMessages, messages }) => {
+const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
   const { user, setUser, unreadCount, setAuth } = useContext(authContext);
 
   const [currentThreadId, setCurrentThreadId] = useState<string | undefined>(
@@ -73,9 +73,9 @@ const App: React.FC<HomePage> = ({ setMessages, messages }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [userTo, setUserTo] = useState<string>();
 
-  // useEffect(() => {
-  //   setUnreadCount();
-  // }, []);
+  useEffect(() => {
+    setUnreadCount();
+  }, []);
 
   const setThread: (id: string) => void = (id) => {
     setCurrentThreadId(id);

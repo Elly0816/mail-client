@@ -8,6 +8,7 @@ import { queryServer } from '../../utils/types/helper/helper';
 import useFetch from '../../hooks/useFetch';
 import { userFromDb } from '../../models/user.models';
 import { threadContext } from '../../pages/homepage/Homepage2';
+import { messageFromDb } from '../../models/message.models';
 
 export interface Thread {
   message: threadFromDb;
@@ -122,7 +123,7 @@ const App: React.FC = () => {
   }, [
     setAuth,
     setUser,
-    messages,
+    (messages as messageFromDb[]).length,
     user?.threads.length,
     threads,
     currentThreadId,

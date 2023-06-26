@@ -65,6 +65,7 @@ const App: React.FC<Compose> = ({
             console.log(JSON.stringify(newMessage));
             setCurrentThreadId(thread._id);
           }
+          setUser(res.data.user as userFromDb);
         }
       })
       .catch((err) => {

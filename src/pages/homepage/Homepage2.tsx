@@ -14,6 +14,7 @@ import CachedIcon from '@mui/icons-material/Cached';
 import {
   Layout,
   Space,
+  Spin,
   //  Menu, theme
 } from 'antd';
 // import useFetch from '../../hooks/useFetch';
@@ -190,74 +191,78 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
           </Space>
         </div>
       </Layout>
-      <Layout hasSider className="flex flex-col">
-        <Sider
-          width={'25vw'}
-          style={{
-            overflow: 'scroll',
-            // scrollbarWidth: 'thin',
-            // height: '100vh',
-            // position: 'initial',
-            left: 0,
-            top: 0,
-            bottom: 0,
-            backgroundColor: COLORS.base,
-            // borderColor: COLORS.primary,
-            margin: 0,
-            padding: 0,
-            // maxWidth: '25%',
-          }}
-          // width={'min-content'}
-          // className="border-6"
-        >
-          {/* <div className="demo-logo-vertical" /> */}
-          {/* <div className="h-5/6"> */}
-          <threadContext.Provider
-            value={{
-              currentThreadId,
-              setThread,
-              changeOtherUser,
-              setMessages,
-              messages,
+      {!loading ? (
+        <Layout hasSider className="flex flex-col">
+          <Sider
+            width={'25vw'}
+            style={{
+              overflow: 'scroll',
+              // scrollbarWidth: 'thin',
+              // height: '100vh',
+              // position: 'initial',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              backgroundColor: COLORS.base,
+              // borderColor: COLORS.primary,
+              margin: 0,
+              padding: 0,
+              // maxWidth: '25%',
             }}
+            // width={'min-content'}
+            // className="border-6"
           >
-            <ThreadList />
-          </threadContext.Provider>
-          {/* </div> */}
-          {/* <div>Hey</div> */}
-        </Sider>
-        <Layout
-          className="p-2 border-2"
-          style={{ borderColor: COLORS.accent, backgroundColor: COLORS.base }}
-        >
-          {/* <div>Hi!</div> */}
-          {/* <div className="flex flex-col h-full"> */}
-          {/* <Space
+            {/* <div className="demo-logo-vertical" /> */}
+            {/* <div className="h-5/6"> */}
+            <threadContext.Provider
+              value={{
+                currentThreadId,
+                setThread,
+                changeOtherUser,
+                setMessages,
+                messages,
+              }}
+            >
+              <ThreadList />
+            </threadContext.Provider>
+            {/* </div> */}
+            {/* <div>Hey</div> */}
+          </Sider>
+          <Layout
+            className="p-2 border-2"
+            style={{ borderColor: COLORS.accent, backgroundColor: COLORS.base }}
+          >
+            {/* <div>Hi!</div> */}
+            {/* <div className="flex flex-col h-full"> */}
+            {/* <Space
             direction="vertical"
             size="small"
             style={{ display: 'flex' }}
             className="h-screen"
           > */}
-          <Message
-            id={currentThreadId}
-            setMessages={setMessages}
-            messages={messages}
-          />
-          <Compose
-            setUser={refreshUser}
-            otherUserEmail={userTo}
-            currentThreadId={currentThreadId}
-            setMessages={setMessages}
-            setCurrentThreadId={setThread}
-            // setOtherUserEmail={() => {
-            //   setUserTo(undefined);
-            //   setCurrentThreadId(undefined);
-            // }}
-          />
-          {/* </Space> */}
-          {/* </div> */}
+            <Message
+              id={currentThreadId}
+              setMessages={setMessages}
+              messages={messages}
+            />
+            <Compose
+              setUser={refreshUser}
+              otherUserEmail={userTo}
+              currentThreadId={currentThreadId}
+              setMessages={setMessages}
+              setCurrentThreadId={setThread}
+              // setOtherUserEmail={() => {
+              //   setUserTo(undefined);
+              //   setCurrentThreadId(undefined);
+              // }}
+            />
+            {/* </Space> */}
+            {/* </div> */}
+          </Layout>
         </Layout>
-      </Layout>
+      ) : (
+        <Spin />
+      )}
     </Layout>
   );
 };

@@ -7,6 +7,7 @@ import { COLORS } from '../../constants/constants';
 import { queryServer } from '../../utils/types/helper/helper';
 import useFetch from '../../hooks/useFetch';
 import { userFromDb } from '../../models/user.models';
+import { threadContext } from '../../pages/homepage/Homepage2';
 
 export interface Thread {
   message: threadFromDb;
@@ -18,6 +19,8 @@ export interface Thread {
 const App: React.FC = () => {
   const { user, setUser, addUnread, setAuth } = useContext(authContext);
   const [reloading, setReloading] = useState(false);
+
+  const { messages, currentThreadId } = useContext(threadContext);
 
   const {
     data,
@@ -65,28 +68,66 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-    setReloading(true);
-    queryServer({ method: 'get', url: `/thread/${user?._id}`, formdata: null })
-      .then((res) => {
-        const data = res.data;
-        const unread = data.unread as unknown as number[];
-        setUnread(unread);
-        const threads = data.message as unknown as threadFromDb[];
-        const otherUser = data.otherUser as unknown as string[];
-        setOtherUser(otherUser);
-        setThreads(threads);
-        setUser && setUser(data.user);
+    const currentThreadIdInThreads =
+      threads &&
+      currentThreadId &&
+      threads?.filter(
+        (thread) => (thread._id as string) == (currentThreadId as string)
+      ).length > 0;
+
+    const lastMessageOnCard =
+      threads &&
+      currentThreadId &&
+      threads?.filter((thread) =>
+        thread.messages.filter((message) =>
+          messages?.filter((messageState) => messageState._id == message)
+        )
+      ).length > 0;
+
+    // const lastMessageOnCard =
+    // threads &&
+    // currentThreadId &&
+    // messages &&
+    // threads?.filter((thread) => thread._id == currentThreadId)[0].messages
+    //   .length == messages.length;
+    // length == messages?.length)
+    //   .length > 0;
+    if (!currentThreadIdInThreads && lastMessageOnCard) {
+      setReloading(true);
+      queryServer({
+        method: 'get',
+        url: `/thread/${user?._id}`,
+        formdata: null,
       })
-      .catch((error) => {
-        if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
-          setAuth && setAuth(false);
-          setUser && setUser(undefined);
-        }
-      })
-      .finally(() => {
-        setReloading(false);
-      });
-  }, [setAuth, setUser, user?._id, user?.threads.length]);
+        .then((res) => {
+          const data = res.data;
+          const unread = data.unread as unknown as number[];
+          setUnread(unread);
+          const threads = data.message as unknown as threadFromDb[];
+          const otherUser = data.otherUser as unknown as string[];
+          setOtherUser(otherUser);
+          setThreads(threads);
+          setUser && setUser(data.user);
+        })
+        .catch((error) => {
+          if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
+            setAuth && setAuth(false);
+            setUser && setUser(undefined);
+          }
+        })
+        .finally(() => {
+          setReloading(false);
+        });
+    }
+  }, [
+    setAuth,
+    setUser,
+    messages,
+    user?.threads.length,
+    threads,
+    currentThreadId,
+    user?._id,
+  ]);
 
   return (
     <List

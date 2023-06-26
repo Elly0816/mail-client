@@ -55,7 +55,11 @@ const App: React.FC<Compose> = ({
           console.log(JSON.stringify(res.data.user) + 'xxx');
           const newMessage: messageFromDb = res.data.message as messageFromDb;
           const thread = res.data.thread as threadFromDb;
-          setMessages([newMessage]);
+          if (currentThreadId) {
+            setMessages(newMessage);
+          } else {
+            setMessages([newMessage]);
+          }
           if (!currentThreadId) {
             console.log(`in if current == new message`);
             console.log(JSON.stringify(newMessage));

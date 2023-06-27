@@ -32,7 +32,7 @@ const App: React.FC<Messages> = ({ id, setMessages, messages }) => {
   useEffect(() => {
     if (messages?.length == 0 && id) {
       if (error) {
-        if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
+        if (error?.name.toLowerCase() !== 'canceledError'.toLowerCase()) {
           setAuth && setAuth(false);
         }
       } else {
@@ -42,7 +42,7 @@ const App: React.FC<Messages> = ({ id, setMessages, messages }) => {
     }
   }, [messagesData, error, setAuth]);
 
-  return id ? (
+  return messages.length > 0 || id ? (
     !loading ? (
       <div
         id="scrollableDiv"
@@ -81,6 +81,9 @@ const App: React.FC<Messages> = ({ id, setMessages, messages }) => {
                   </div>
                 }
               >
+                <div className="font-semibold text-lg mb-9">
+                  <h2>{item.title}</h2>
+                </div>
                 <div className="font-normal text-base">
                   <h3>{item.body}</h3>
                 </div>

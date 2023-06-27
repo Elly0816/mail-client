@@ -8,7 +8,6 @@ import { queryServer } from '../../utils/types/helper/helper';
 import useFetch from '../../hooks/useFetch';
 import { userFromDb } from '../../models/user.models';
 import { threadContext } from '../../pages/homepage/Homepage2';
-import { messageFromDb } from '../../models/message.models';
 
 export interface Thread {
   message: threadFromDb;
@@ -93,7 +92,13 @@ const App: React.FC = () => {
     //   .length == messages.length;
     // length == messages?.length)
     //   .length > 0;
-    if (!currentThreadIdInThreads && lastMessageOnCard) {
+
+    // const isUpdatedThreadList = user?.threads.length === threads?.length;
+    // const isUpdatedMessageList =
+    //   threads?.filter((thread) => thread._id == currentThreadId)[0].messages
+    //     .length === messages?.length;
+    // if (!isUpdatedThreadList || !isUpdatedMessageList) {
+    if (!currentThreadIdInThreads && !lastMessageOnCard) {
       setReloading(true);
       queryServer({
         method: 'get',
@@ -123,11 +128,12 @@ const App: React.FC = () => {
   }, [
     setAuth,
     setUser,
-    (messages as messageFromDb[]).length,
-    user?.threads.length,
-    threads,
-    currentThreadId,
+    messages,
+    // (messages as messageFromDb[]).length,
     user?._id,
+    // threads,
+    // currentThreadId,
+    // user,
   ]);
 
   return (

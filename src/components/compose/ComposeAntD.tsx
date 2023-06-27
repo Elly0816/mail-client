@@ -14,7 +14,8 @@ interface Compose {
   setUser: (user: userFromDb) => void;
   setMessages: (message: messageFromDb | messageFromDb[] | undefined) => void;
   setCurrentThreadId: (id: string) => void;
-  // setOtherUserEmail?: () => void;
+  setOtherUserEmail?: (email: string) => void;
+  messages: messageFromDb[];
 }
 
 const App: React.FC<Compose> = ({
@@ -23,12 +24,12 @@ const App: React.FC<Compose> = ({
   setUser,
   setMessages,
   setCurrentThreadId,
-  // setOtherUserEmail,
+  setOtherUserEmail,
 }) => {
   const [emailTo, setEmailTo] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
   const [emailTitle, setEmailTitle] = useState('');
-  // const { currentThreadId, userTo } = useContext(threadContext);
+  // const { userTo } = useContext(threadContext);
 
   const [disabled, setDisabled] = useState(true);
 
@@ -60,12 +61,25 @@ const App: React.FC<Compose> = ({
           } else {
             setMessages([newMessage]);
           }
-          if (!currentThreadId) {
+          if (currentThreadId !== thread._id) {
             console.log(`in if current == new message`);
             console.log(JSON.stringify(newMessage));
+            console.log(thread._id);
             setCurrentThreadId(thread._id);
           }
           setUser(res.data.user as userFromDb);
+          // setEmailTo(
+          //   newMessage.from == res.data.user.email
+          //     ? newMessage.to
+          //     : newMessage.from
+          // );
+          // !otherUserEmail &&
+          setOtherUserEmail &&
+            setOtherUserEmail(
+              newMessage.from == res.data.user.email
+                ? newMessage.to
+                : newMessage.from
+            );
         }
       })
       .catch((err) => {
@@ -74,12 +88,24 @@ const App: React.FC<Compose> = ({
       });
   };
   useEffect(() => {
+    // if (userTo) {
     otherUserEmail && setEmailTo(otherUserEmail);
+    // }
   }, [otherUserEmail]);
 
   useEffect(() => {
-    emailMessage && emailTitle && emailTo && setDisabled(false);
+    emailMessage && emailTitle && emailTo
+      ? setDisabled(false)
+      : setDisabled(true);
   }, [emailTo, emailMessage, emailTitle]);
+
+  // useEffect(() => {
+  //   if (messages[0]?.threadId != currentThreadId) {
+  //     messages &&
+  //       messages[0]?.threadId != currentThreadId &&
+  //       setCurrentThreadId(messages[0]?.threadId);
+  //   }
+  // }, [messages, setCurrentThreadId]);
 
   return (
     <Layout className="bottom-0" style={{}}>

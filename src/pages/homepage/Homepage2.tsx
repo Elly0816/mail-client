@@ -158,6 +158,7 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
               onClick={() => {
                 setUserTo(undefined);
                 setCurrentThreadId(undefined);
+                setMessages();
               }}
             >
               Click to start a new thread
@@ -251,10 +252,8 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
               currentThreadId={currentThreadId}
               setMessages={setMessages}
               setCurrentThreadId={setThread}
-              // setOtherUserEmail={() => {
-              //   setUserTo(undefined);
-              //   setCurrentThreadId(undefined);
-              // }}
+              setOtherUserEmail={changeOtherUser}
+              messages={messages}
             />
             {/* </Space> */}
             {/* </div> */}

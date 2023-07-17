@@ -140,7 +140,7 @@ function App() {
         <methContext.Provider value={{ meth, toggle }}>
           {/* {contextHolder} */}
           <Layout
-            className="py-7 h-screen"
+            className=""
             // style={{ backgroundColor: COLORS.base, color: COLORS.accent }}
           >
             {meth == 'login' ? <LoginPage /> : <SignUpPage />}

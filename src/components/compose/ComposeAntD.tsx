@@ -114,7 +114,7 @@ const App: React.FC<Compose> = ({
   return (
     <Layout className="bottom-0" style={{}}>
       <Space
-        className="border-10 border-black h-full p-5"
+        className="border-10 border-black p-5"
         direction="vertical"
         size="large"
         style={{ backgroundColor: COLORS.base }}
@@ -143,22 +143,24 @@ const App: React.FC<Compose> = ({
             <h5>{`Start a new Thread`}</h5>
           </div>
         )}
-        <TextArea
+        <Input
+          allowClear
           placeholder="Email to: ..."
           onChange={(e) => setEmailTo(e.target.value)}
           value={emailTo}
           disabled={otherUserEmail ? true : false}
-          style={{ height: '10px' }}
+          // style={{ height: '10px' }}
         />
         {/* )} */}
 
         {/* <div style={{ margin: '10px 0' }} /> */}
-        <TextArea
+        <Input
+          allowClear
           placeholder="Message Title: ..."
           // autoSize={{ minRows: 2, maxRows: 6 }}
           value={emailTitle}
           onChange={(e) => setEmailTitle(e.target.value)}
-          style={{ height: '10px' }}
+          // style={{ height: '10px' }}
         />
         {/* <div style={{ margin: '10px 0' }} /> */}
         <div className="flex space-between w-full items-center justify-evenly">
@@ -169,10 +171,11 @@ const App: React.FC<Compose> = ({
           > */}
           <TextArea
             value={emailMessage}
+            allowClear
             onChange={(e) => setEmailMessage(e.target.value)}
             placeholder="Message..."
-            autoSize={{ maxRows: 4, minRows: 3 }}
-            className="w-10/12 h-fit"
+            autoSize={{ maxRows: 5, minRows: 3 }}
+            className="w-10/12 h-full"
           />
           <Button
             onClick={() => {

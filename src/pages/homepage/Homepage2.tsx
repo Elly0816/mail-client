@@ -4,6 +4,8 @@ import React, {
   useState,
   useEffect,
   CSSProperties,
+  useRef,
+  RefObject,
 } from 'react';
 import CachedIcon from '@mui/icons-material/Cached';
 // import {
@@ -118,18 +120,28 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
   };
 
   const wide = useWindowWide(600);
-  // const newThread: MutableRefObject<HTMLElement | undefined> | undefined =
-  //   useRef();
+
+  const viewRef: RefObject<null | undefined | HTMLElement> = useRef(null);
+  const mainRef: RefObject<null | undefined | HTMLElement> = useRef(null);
+  const headerRef: RefObject<null | undefined | HTMLElement> = useRef(null);
+  const height = viewRef.current?.clientHeight;
+  const mainHeight = mainRef.current?.clientHeight as number;
+  const headerHeight = headerRef.current?.clientHeight as number;
+  const otherHeight = ((mainHeight as number) - headerHeight) as number;
 
   const borderStyle: CSSProperties = {
-    borderColor: COLORS.accent,
+    borderColor: COLORS.primary,
     borderStyle: 'solid',
-    borderTopWidth: 3,
+    borderTopWidth: 1,
+    height: otherHeight,
   };
 
   return (
-    <Layout className="flex flex-col h-full">
-      <Layout style={{ height: 80, maxHeight: 80 }}>
+    <Layout ref={mainRef as RefObject<HTMLElement>} className="flex flex-col">
+      <Layout
+        ref={headerRef as RefObject<HTMLElement>}
+        style={{ height: 60, maxHeight: 60 }}
+      >
         {/* <div
           style={{
             backgroundColor: COLORS.base,
@@ -138,7 +150,7 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
           className="align-middle h-min flex p-5 flex-shrink font-bold text-lg justify-around border-y-2"
         > */}
         <Space
-          className="align-middle flex p-5 flex-shrink font-bold text-lg justify-around"
+          className="align-middle flex py-2 px-5 flex-shrink font-bold text-lg justify-around"
           style={{
             backgroundColor: COLORS.base,
             color: COLORS.primary,
@@ -148,25 +160,23 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
           <h4 style={{ fontStyle: 'italic' }}>{`Hi ${getNameFromUser(
             user?.email as string
           ).toLocaleUpperCase()}!`}</h4>
-          {unreadCount && (
-            <div className=" shadow-md p-1 bg-green-500 text-white rounded-2xl">
-              {wide || !userTo ? (
+          {unreadCount && unreadCount.unread > 0 && (
+            <div className=" shadow-md p-1 bg-green-500 text-white rounded-full">
+              {wide && !(userTo && userTo.length > 0) ? (
                 <h5>{`${
                   unreadCount && unreadCount.unread > 0 ? unreadCount.unread : 0
                 } new message${
                   unreadCount && unreadCount.unread > 1 ? 's' : ''
                 }`}</h5>
               ) : (
-                <h5 className="text-white">
-                  {unreadCount && unreadCount.unread}
-                </h5>
+                <h5>{unreadCount && unreadCount.unread}</h5>
               )}
             </div>
           )}
           {/* {userTo && ( */}
           <Button
             className="m-3"
-            // ref={newThread as MutableRefObject<HTMLElement>}
+            // ref={newThread as RefObject<HTMLElement>}
             style={{
               color: 'whitesmoke',
               backgroundColor: COLORS.secondary,
@@ -213,29 +223,24 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
         {/* </div> */}
       </Layout>
       {!loading ? (
-        <Layout hasSider className="flex flex-col">
+        <Layout
+          hasSider
+          className="flex flex-col h-screen px-7 pb-7"
+          style={borderStyle}
+        >
           <Sider
             width={'25vw'}
             style={{
-              overflow: 'scroll',
-              // scrollbarWidth: 'thin',
-              // height: '100vh',
-              // position: 'initial',
-              left: 0,
-              top: 0,
-              bottom: 0,
+              // left: 0,
+              // top: 0,
+              // bottom: 0,
               backgroundColor: COLORS.base,
               // borderColor: COLORS.primary,
               margin: 0,
-              ...borderStyle,
+              // ...borderStyle,
               padding: 0,
-              // maxWidth: '25%',
             }}
-            // width={'min-content'}
-            // className="border-6"
           >
-            {/* <div className="demo-logo-vertical" /> */}
-            {/* <div className="h-5/6"> */}
             <threadContext.Provider
               value={{
                 currentThreadId,
@@ -245,23 +250,19 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
                 messages,
               }}
             >
-              <ThreadList />
+              <ThreadList height={height as number} />
             </threadContext.Provider>
             {/* </div> */}
             {/* <div>Hey</div> */}
           </Sider>
           <Layout
             className="p-2"
-            style={{ backgroundColor: COLORS.base, ...borderStyle }}
+            ref={viewRef as RefObject<HTMLElement>}
+            style={{
+              backgroundColor: COLORS.base,
+              //  ...borderStyle
+            }}
           >
-            {/* <div>Hi!</div> */}
-            {/* <div className="flex flex-col h-full"> */}
-            {/* <Space
-              direction="vertical"
-              size="small"
-              style={{ display: 'flex' }}
-              className="h-screen"
-            > */}
             <Message
               id={currentThreadId}
               setMessages={setMessages}

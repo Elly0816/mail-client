@@ -11,12 +11,11 @@ import { threadContext } from '../../pages/homepage/Homepage2';
 
 export interface Thread {
   message: threadFromDb;
-  //   user: userFromDb;
   unread: boolean;
   otherUser: string;
 }
 
-const App: React.FC = () => {
+const App: React.FC<{ height: number }> = ({ height }) => {
   const { user, setUser, addUnread, setAuth, shouldFetch, setShouldFetch } =
     useContext(authContext);
   const [reloading, setReloading] = useState(false);
@@ -45,9 +44,6 @@ const App: React.FC = () => {
   const [threads, setThreads] = useState<threadFromDb[] | undefined>([]);
   const [unread, setUnread] = useState<number[] | undefined>([]);
   const [otherUser, setOtherUser] = useState<string[] | undefined>([]);
-  // useEffect(()=>{
-  //   queryServer({method: 'get', url:''})
-  // }, [user]);
   useEffect(() => {
     if (data) {
       const unread = data.unread as unknown as number[];
@@ -69,22 +65,6 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-    // const currentThreadIdInThreads =
-    //   threads &&
-    //   currentThreadId &&
-    //   threads?.filter(
-    //     (thread) => (thread._id as string) == (currentThreadId as string)
-    //   ).length > 0;
-
-    // const lastMessageOnCard =
-    //   threads &&
-    //   currentThreadId &&
-    //   threads?.filter((thread) =>
-    //     thread.messages.filter((message) =>
-    //       messages?.filter((messageState) => messageState._id == message)
-    //     )
-    //   ).length > 0;
-
     if (shouldFetch) {
       setReloading(true);
       queryServer({
@@ -118,28 +98,17 @@ const App: React.FC = () => {
   return (
     <List
       loading={loading || reloading}
-      className="overflow-y-scroll h-screen "
-      style={{ backgroundColor: COLORS.base }}
+      className="overflow-y-auto overflow-x-hidden"
+      style={{ backgroundColor: COLORS.base, height: height }}
       dataSource={threads}
-      renderItem={(thread: threadFromDb) => (
-        <div
-          style={{ borderColor: COLORS.accent }}
-          //  className="border-y-4 py-2"
-        >
-          <ThreadCard
-            // addUnread={addUnread as () => void}
-            thread={thread}
-            key={threads?.indexOf(thread)}
-            unread={
-              unread && threads && (unread[threads?.indexOf(thread)] as number)
-            }
-            otherUser={
-              otherUser &&
-              threads &&
-              (otherUser[threads?.indexOf(thread)] as string)
-            }
-          />
-        </div>
+      bordered
+      renderItem={(thread: threadFromDb, index: number) => (
+        <ThreadCard
+          thread={thread}
+          key={index}
+          unread={unread && threads && (unread[index] as number)}
+          otherUser={otherUser && threads && (otherUser[index] as string)}
+        />
       )}
     />
   );

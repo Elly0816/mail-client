@@ -71,7 +71,7 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
       onFinish={onFinish}
       style={{ maxWidth: 600 }}
       scrollToFirstError
-      className="shadow-2xl rounded-md p-5 w-fit border-2"
+      className="shadow-2xl rounded-md p-5 w-full border-2"
     >
       <Form.Item
         name="email"

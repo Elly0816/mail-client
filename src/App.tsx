@@ -19,9 +19,11 @@ export interface authContextType {
   auth?: boolean;
   setUser?: React.Dispatch<React.SetStateAction<userFromDb | undefined>>;
   setAuth?: React.Dispatch<React.SetStateAction<boolean>>;
+  setShouldFetch?: React.Dispatch<React.SetStateAction<boolean>>;
   addUnread?: (threadId: string, unread: number) => void;
   unreadCount?: { threads: string[]; unread: number };
   removeUnread?: (locUnrea: number) => void;
+  shouldFetch?: boolean;
 }
 
 export interface methContextType {
@@ -40,30 +42,10 @@ function App() {
 
   const [messages, setMessages] = useState<messageFromDb[]>([]);
 
-  // const successNotification = () => {
-  //   messageApi.open({
-  //     type: 'success',
-  //     content: 'This is a success message',
-  //   });
-  // };
-
-  // const errorNotification = () => {
-  //   messageApi.open({
-  //     type: 'error',
-  //     content: 'This is an error message',
-  //   });
-  // };
-
-  // const warningNotification = () => {
-  //   messageApi.open({
-  //     type: 'warning',
-  //     content: 'This is a warning message',
-  //   });
-  // };
-
   const [auth, setAuth] = useState<boolean>(false);
 
   const { data, error, loading } = useFetch({ method: 'get', path: '' });
+  const [shouldFetch, setShouldFetch] = useState(false);
 
   const toggle = useCallback(() => {
     if (meth == 'login') {
@@ -140,6 +122,8 @@ function App() {
         addUnread,
         unreadCount,
         removeUnread,
+        shouldFetch,
+        setShouldFetch,
       }}
     >
       {/* {contextHolder} */}
@@ -168,7 +152,7 @@ function App() {
 
   const child = loading ? (
     <Layout>
-      <div className="h-screen p-auto">
+      <div className="h-screen p-auto flex justify-center items-center">
         <Spin />
       </div>
     </Layout>
@@ -176,12 +160,11 @@ function App() {
     main
   );
 
-  return (
-    <authContext.Provider value={{ auth, user, setUser, setAuth }}>
-      {/* {contextHolder} */}
-      {child}
-    </authContext.Provider>
-  );
+  return child;
+  // <authContext.Provider value={{ auth, user, setUser, setAuth }}>
+  // {/* {contextHolder} */}
+
+  // </authContext.Provider>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

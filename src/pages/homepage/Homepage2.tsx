@@ -1,4 +1,10 @@
-import React, { useContext, createContext, useState, useEffect } from 'react';
+import React, {
+  useContext,
+  createContext,
+  useState,
+  useEffect,
+  CSSProperties,
+} from 'react';
 import CachedIcon from '@mui/icons-material/Cached';
 // import {
 //   AppstoreOutlined,
@@ -29,26 +35,9 @@ import { getNameFromUser, queryServer } from '../../utils/types/helper/helper';
 import { userFromDb } from '../../models/user.models';
 import { COLORS } from '../../constants/constants';
 import { messageFromDb } from '../../models/message.models';
+import useWindowWide from '../../hooks/useWindowWidth';
 
-const {
-  // Header, Content, Footer,
-  Sider,
-} = Layout;
-
-// const items: MenuProps['items'] = [
-//   UserOutlined,
-//   VideoCameraOutlined,
-//   UploadOutlined,
-//   BarChartOutlined,
-//   CloudOutlined,
-//   AppstoreOutlined,
-//   TeamOutlined,
-//   ShopOutlined,
-// ].map((icon, index) => ({
-//   key: String(index + 1),
-//   icon: React.createElement(icon),
-//   label: `nav ${index + 1}`,
-// }));
+const { Sider } = Layout;
 
 interface ThreadContext {
   setThread?: (id: string) => void;
@@ -127,70 +116,100 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
       });
   };
 
+  const wide = useWindowWide(600);
+  // const newThread: MutableRefObject<HTMLElement | undefined> | undefined =
+  //   useRef();
+
+  const borderStyle: CSSProperties = {
+    borderColor: COLORS.accent,
+    borderStyle: 'solid',
+    borderTopWidth: 3,
+  };
+
   return (
-    <Layout className="flex flex-col h-max">
-      <Layout className="h-fit">
-        <div
+    <Layout className="flex flex-col h-full">
+      <Layout style={{ height: 80, maxHeight: 80 }}>
+        {/* <div
+          style={{
+            backgroundColor: COLORS.base,
+            ...borderStyle,
+          }}
+          className="align-middle h-min flex p-5 flex-shrink font-bold text-lg justify-around border-y-2"
+        > */}
+        <Space
+          className="align-middle flex p-5 flex-shrink font-bold text-lg justify-around"
           style={{
             backgroundColor: COLORS.base,
             color: COLORS.primary,
-            borderColor: COLORS.primary,
+            borderColor: COLORS.accent,
           }}
-          className="align-middle h-min flex p-5 flex-shrink font-bold text-lg justify-around border-y-2"
         >
-          <Space className="w-full flex justify-between">
-            <h4>{`Hi ${getNameFromUser(
-              user?.email as string
-            ).toLocaleUpperCase()}`}</h4>
-            <h5>{`You have ${
-              unreadCount && unreadCount.unread > 0 ? unreadCount.unread : 0
-            } unread message${
-              unreadCount && unreadCount.unread > 1 ? 's' : ''
-            }`}</h5>
-            {/* {userTo && ( */}
-            <Button
-              className="m-3"
-              style={{
-                color: 'whitesmoke',
-                backgroundColor: COLORS.secondary,
-                display: shouldDisplay(userTo as string),
-              }}
-              onClick={() => {
-                setUserTo(undefined);
-                setCurrentThreadId(undefined);
-                setMessages();
-              }}
-            >
-              Click to start a new thread
-            </Button>
-            {/* // )} */}
+          <h4 style={{ fontStyle: 'italic' }}>{`Hi ${getNameFromUser(
+            user?.email as string
+          ).toLocaleUpperCase()}!`}</h4>
+          {unreadCount && (
+            <div className=" shadow-md p-1 bg-green-500 text-white rounded-2xl">
+              {wide || !userTo ? (
+                <h5>{`${
+                  unreadCount && unreadCount.unread > 0 ? unreadCount.unread : 0
+                } new message${
+                  unreadCount && unreadCount.unread > 1 ? 's' : ''
+                }`}</h5>
+              ) : (
+                <h5 className="text-white">
+                  {unreadCount && unreadCount.unread}
+                </h5>
+              )}
+            </div>
+          )}
+          {/* {userTo && ( */}
+          <Button
+            className="m-3"
+            // ref={newThread as MutableRefObject<HTMLElement>}
+            style={{
+              color: 'whitesmoke',
+              backgroundColor: COLORS.secondary,
+              display: shouldDisplay(userTo as string),
+            }}
+            onClick={() => {
+              setUserTo(undefined);
+              setCurrentThreadId(undefined);
+              setMessages();
+            }}
+          >
+            Start New Thread
+          </Button>
+          {/* // )} */}
 
-            <Button
-              style={{ backgroundColor: COLORS.secondary }}
-              title="Refresh thread"
-              onClick={refreshPage}
-            >
+          <Button
+            style={{ backgroundColor: COLORS.secondary, padding: 0 }}
+            title="Refresh thread"
+            onClick={refreshPage}
+            icon={
               <CachedIcon
                 className="hover:cursor-pointer"
                 style={{
                   color: COLORS.base,
+                  margin: 0,
                   // backgroundColor: COLORS.secondary,
                 }}
               />
-            </Button>
-            <Button
-              type="primary"
-              style={{ backgroundColor: COLORS.secondary }}
-              icon={<PoweroffOutlined />}
-              loading={loading}
-              onClick={() => {
-                logout();
-              }}
-            >
-              Logout
-            </Button>
-          </Space>
-        </div>
+            }
+          />
+          {/* </Button> */}
+          <Button
+            type="primary"
+            style={{ backgroundColor: COLORS.secondary }}
+            icon={<PoweroffOutlined />}
+            loading={loading}
+            onClick={() => {
+              logout();
+            }}
+          >
+            {wide && 'Logout'}
+          </Button>
+        </Space>
+        {/* </div> */}
       </Layout>
       {!loading ? (
         <Layout hasSider className="flex flex-col">
@@ -207,6 +226,7 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
               backgroundColor: COLORS.base,
               // borderColor: COLORS.primary,
               margin: 0,
+              ...borderStyle,
               padding: 0,
               // maxWidth: '25%',
             }}
@@ -230,17 +250,17 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
             {/* <div>Hey</div> */}
           </Sider>
           <Layout
-            className="p-2 border-2"
-            style={{ borderColor: COLORS.accent, backgroundColor: COLORS.base }}
+            className="p-2"
+            style={{ backgroundColor: COLORS.base, ...borderStyle }}
           >
             {/* <div>Hi!</div> */}
             {/* <div className="flex flex-col h-full"> */}
             {/* <Space
-            direction="vertical"
-            size="small"
-            style={{ display: 'flex' }}
-            className="h-screen"
-          > */}
+              direction="vertical"
+              size="small"
+              style={{ display: 'flex' }}
+              className="h-screen"
+            > */}
             <Message
               id={currentThreadId}
               setMessages={setMessages}
@@ -260,7 +280,9 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
           </Layout>
         </Layout>
       ) : (
-        <Spin />
+        <div className="flex justify-center items-center h-full">
+          <Spin />
+        </div>
       )}
     </Layout>
   );

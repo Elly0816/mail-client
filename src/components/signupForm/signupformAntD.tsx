@@ -71,7 +71,7 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
       onFinish={onFinish}
       style={{ maxWidth: 600 }}
       scrollToFirstError
-      className="flex flex-col justify-center align-middle"
+      className="shadow-2xl rounded-md p-5 w-fit border-2"
     >
       <Form.Item
         name="email"
@@ -130,26 +130,26 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
       </Form.Item>
       {/* <Form.Item className="flex flex-col justify-self-center align-middle m-0">
       </Form.Item> */}
-      <div className="w-full m-0">
+      <div className="w-full m-0 flex flex-col items-center">
         <Button
           style={{ backgroundColor: COLORS.secondary }}
           type="primary"
           htmlType="submit"
-          className="login-form-button"
+          className="login-form-button w-min"
         >
           Register
         </Button>
         {'     '}
-        <h3
+        <div
           style={{ color: COLORS.secondary }}
           // type="primary"
-          className="hover:cursor-pointer"
+          className="hover:cursor-pointer w-fit"
           onClick={() => {
             toggle();
           }}
         >
-          Login Instead
-        </h3>
+          <h3>Login Instead</h3>
+        </div>
       </div>
     </Form>
   );

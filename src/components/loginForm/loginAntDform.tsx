@@ -50,7 +50,8 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
   return (
     <Form
       name="normal_login"
-      className="login-form"
+      // className="login-form "
+      className="shadow-2xl rounded-md p-5 border-2 flex flex-col w-fit"
       initialValues={{ remember: true }}
       onFinish={onFinish}
     >
@@ -75,7 +76,7 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
       </Form.Item>
 
       {/* <Form.Item className="m-auto"> */}
-      <div className="w-full m-0">
+      <div className="w-full m-0 flex flex-col items-center">
         <Button
           style={{ backgroundColor: COLORS.secondary }}
           type="primary"

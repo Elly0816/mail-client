@@ -8,6 +8,7 @@ import {
 import SignUpForm from '../../components/signupForm/signupformAntD';
 import React from 'react';
 import './signupPage.css';
+import { COLORS } from '../../constants/constants';
 // import { authContext } from '../../App';
 // import { useNavigate } from 'react-router-dom';
 // import Loading from '../../components/loading/Loading';
@@ -29,7 +30,11 @@ const SignUpPage: React.FC<loginPageProps> = () => {
 
   // return !loading ? (
   return (
-    <div className="w-4/6 m-auto mt-20 p-10 bg-slate-300 rounded-lg">
+    <div className="items-center flex flex-col justify-center mt-20 p-10 rounded-lg border-5 border-black-100">
+      {/* <div className="w-4/6 m-auto mt-20 p-10 bg-slate-300 rounded-lg"> */}
+      <h1 style={{ color: COLORS.primary }} className="font-semibold">
+        SignUp
+      </h1>
       <SignUpForm loading={loading} setLoading={setLoading} />
     </div>
   );

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react';
-import { Card, Divider, Empty, List, Skeleton, Spin } from 'antd';
+import React, { RefObject, useContext, useEffect, useRef } from 'react';
+import { Card, Empty, List, Skeleton, Spin } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import useFetch from '../../hooks/useFetch';
 import { messageFromDb } from '../../models/message.models';
@@ -29,6 +29,9 @@ const App: React.FC<Messages> = ({ id, setMessages, messages }) => {
 
   const { setUser, user, setAuth } = useContext(authContext);
 
+  const listRef: RefObject<HTMLDivElement | null> | null = useRef(null);
+  const msgs = listRef?.current as HTMLElement;
+
   useEffect(() => {
     if (messages?.length == 0 && id) {
       if (error) {
@@ -42,6 +45,12 @@ const App: React.FC<Messages> = ({ id, setMessages, messages }) => {
     }
   }, [messagesData, error, setAuth]);
 
+  useEffect(() => {
+    if (msgs) {
+      msgs.scrollTop = msgs?.scrollHeight as number;
+    }
+  }, [msgs, messages, messagesData, listRef]);
+
   return messages.length > 0 || id ? (
     !loading ? (
       <div
@@ -53,15 +62,17 @@ const App: React.FC<Messages> = ({ id, setMessages, messages }) => {
           border: '1px solid rgba(140, 140, 140, 0.35)',
         }}
         className="col-span-2 h-3/6"
+        ref={listRef as RefObject<HTMLDivElement>}
       >
         <InfiniteScroll
+          // ref={listRef as RefObject<InfiniteScroll>}
           dataLength={messages?.length ? messages.length : 0}
           next={() => {
             return null;
           }}
           hasMore={false}
           loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
-          endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+          // endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
           scrollableTarget="scrollableDiv"
           // className=" h-full"
         >
@@ -72,7 +83,7 @@ const App: React.FC<Messages> = ({ id, setMessages, messages }) => {
             dataSource={messages}
             renderItem={(item) => (
               <Card
-                className={`text-left h-1/3 my-10 text-slate-50 ${
+                className={`text-left h-1/3 my-10 text-slate-50 shadow-2xl ${
                   item.from == user?.email ? 'bg-green-500' : 'bg-blue-500'
                 }`}
                 title={

@@ -17,10 +17,11 @@ export interface Thread {
 }
 
 const App: React.FC = () => {
-  const { user, setUser, addUnread, setAuth } = useContext(authContext);
+  const { user, setUser, addUnread, setAuth, shouldFetch, setShouldFetch } =
+    useContext(authContext);
   const [reloading, setReloading] = useState(false);
 
-  const { messages, currentThreadId } = useContext(threadContext);
+  const { messages } = useContext(threadContext);
 
   const {
     data,
@@ -68,37 +69,23 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-    const currentThreadIdInThreads =
-      threads &&
-      currentThreadId &&
-      threads?.filter(
-        (thread) => (thread._id as string) == (currentThreadId as string)
-      ).length > 0;
-
-    const lastMessageOnCard =
-      threads &&
-      currentThreadId &&
-      threads?.filter((thread) =>
-        thread.messages.filter((message) =>
-          messages?.filter((messageState) => messageState._id == message)
-        )
-      ).length > 0;
+    // const currentThreadIdInThreads =
+    //   threads &&
+    //   currentThreadId &&
+    //   threads?.filter(
+    //     (thread) => (thread._id as string) == (currentThreadId as string)
+    //   ).length > 0;
 
     // const lastMessageOnCard =
-    // threads &&
-    // currentThreadId &&
-    // messages &&
-    // threads?.filter((thread) => thread._id == currentThreadId)[0].messages
-    //   .length == messages.length;
-    // length == messages?.length)
-    //   .length > 0;
+    //   threads &&
+    //   currentThreadId &&
+    //   threads?.filter((thread) =>
+    //     thread.messages.filter((message) =>
+    //       messages?.filter((messageState) => messageState._id == message)
+    //     )
+    //   ).length > 0;
 
-    // const isUpdatedThreadList = user?.threads.length === threads?.length;
-    // const isUpdatedMessageList =
-    //   threads?.filter((thread) => thread._id == currentThreadId)[0].messages
-    //     .length === messages?.length;
-    // if (!isUpdatedThreadList || !isUpdatedMessageList) {
-    if (!currentThreadIdInThreads && !lastMessageOnCard) {
+    if (shouldFetch) {
       setReloading(true);
       queryServer({
         method: 'get',
@@ -122,19 +109,11 @@ const App: React.FC = () => {
           }
         })
         .finally(() => {
+          setShouldFetch && setShouldFetch(false);
           setReloading(false);
         });
     }
-  }, [
-    setAuth,
-    setUser,
-    messages,
-    // (messages as messageFromDb[]).length,
-    user?._id,
-    // threads,
-    // currentThreadId,
-    // user,
-  ]);
+  }, [setAuth, setUser, messages, user?._id, shouldFetch, setShouldFetch]);
 
   return (
     <List

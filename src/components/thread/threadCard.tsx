@@ -24,33 +24,6 @@ const App: React.FC<{
     setMessages,
   } = useContext(threadContext);
 
-  // const {
-  //   data,
-  //   error,
-  //   loading,
-  // }: {
-  //   data:
-  //     | {
-  //         message: threadFromDb;
-  //         user: userFromDb;
-  //         unread: number;
-  //         otherUser: string;
-  //       }
-  //     | undefined;
-  //   error: Error | undefined;
-  //   loading: boolean;
-  // } = useFetch({
-  //   path: `/thread/${threadId}`,
-  //   method: 'get',
-  // });
-
-  // useEffect(() => {
-  //   console.log(data, error, loading);
-  //   data?.user && setUser && setUser(data?.user);
-  //   data?.unread && addUnread && addUnread(threadId, data.unread);
-  //   // data?.otherUser && setUserTo && setUserTo(data.otherUser);
-  // }, [data, error, loading, setUser]);
-
   const [canRemove, setCanRemove] = useState<boolean>(true);
   const { currentThreadId } = useContext(threadContext);
 
@@ -63,32 +36,30 @@ const App: React.FC<{
             canRemove && unread && unread > 0 ? 'font-extrabold' : 'font-medium'
           } justify-between	`}
         >
-          <div className="text-start">
-            <h4>
-              {thread.lastTitle
-                ? `${thread.lastTitle}`
-                : `Thread with ${getNameFromUser(otherUser as string)}`}
-            </h4>
-            {!canRemove ||
-              (unread && unread > 0 ? (
-                <h6 className="text-green-600">{`${unread} Unread`}</h6>
-              ) : null)}
+          <div className="text-start font-thin">
+            <h4>{`${getNameFromUser(otherUser as string)}`}</h4>
           </div>
         </div>
       }
+      cover={
+        <div className="font-semibold">
+          <h3>Title: {thread.lastTitle}</h3>
+        </div>
+      }
       bordered={true}
-      // style={{
-      //   width: '100%',
-      //   height: 200,
-      //   borderBottom: 3,
-      //   borderTop: 3,
-      //   color: COLORS.primary,
-      //   borderColor: COLORS.accent,
-      //   backgroundColor: COLORS.base,
-      // }}
-      className={`threadCard rounded-none p-0 hover:cursor-pointer ${
-        currentThreadId && currentThreadId == thread._id && 'isThread'
-      } `}
+      hoverable
+      extra={
+        !canRemove ||
+        (unread && unread > 0 ? (
+          <div className="bg-green-600 text-white shadow-lg rounded-2xl w-7">
+            <h6 className="text-white-600">{`${unread}`}</h6>
+          </div>
+        ) : null)
+      }
+      className={`threadCard rounded-none p-0
+       hover:cursor-pointer ${
+         currentThreadId && currentThreadId == thread._id && 'isThread'
+       } `}
       // loading={loading}
       onClick={() => {
         if (currentThreadId != thread._id) {
@@ -102,10 +73,10 @@ const App: React.FC<{
       }}
     >
       <div
-        className="flex flex-grow m-0 px-0 flex-col"
+        className="flex flex-grow m-0 px-0 flex-col w-full"
         // style={{ backgroundColor: COLORS.base }}
       >
-        <div className="flex flex-row font-semibold justify-start">
+        <div className="flex flex-row font-light justify-start">
           <p>
             {thread.lastMessage && thread.lastMessage.substring(0, 25) + '...'}
           </p>

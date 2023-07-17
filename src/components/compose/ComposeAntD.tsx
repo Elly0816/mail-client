@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Input, Layout, Space } from 'antd';
 import { queryServer } from '../../utils/types/helper/helper';
 import { userFromDb } from '../../models/user.models';
 import { COLORS } from '../../constants/constants';
 import { messageFromDb } from '../../models/message.models';
 import { threadFromDb } from '../../models/thread.models';
+import { authContext } from '../../App';
 
 const { TextArea } = Input;
 
@@ -29,7 +30,7 @@ const App: React.FC<Compose> = ({
   const [emailTo, setEmailTo] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
   const [emailTitle, setEmailTitle] = useState('');
-  // const { userTo } = useContext(threadContext);
+  const { setShouldFetch } = useContext(authContext);
 
   const [disabled, setDisabled] = useState(true);
 
@@ -85,6 +86,9 @@ const App: React.FC<Compose> = ({
       .catch((err) => {
         console.log(err);
         setDisabled(false);
+      })
+      .finally(() => {
+        setShouldFetch && setShouldFetch(true);
       });
   };
   useEffect(() => {

@@ -85,6 +85,7 @@ const App: React.FC<HomePage> = ({ setMessages, messages, setUnreadCount }) => {
     localStorage.removeItem('refresh');
     setAuth && setAuth(false);
     setUser && setUser(undefined);
+    setMessages(undefined);
     queryServer({ method: 'post', url: '/logout', formdata: null })
       .then((res) => {
         console.log('+++' + JSON.stringify(res));

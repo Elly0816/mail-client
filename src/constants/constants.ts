@@ -4,4 +4,5 @@ export enum COLORS {
   primary = '#1B262C',
   accent = '#3282B8',
   baseHover = '#746854',
+  unread = '#32cb6e',
 }

@@ -8,14 +8,6 @@ let instance: AxiosInstance | undefined;
 if (BASE) {
   instance = axios.create({
     baseURL: BASE,
-    // timeout: 5000,
-    // headers: {
-    //   'Access-Control-Allow-Origin': '*',
-    //   Authorization: JSON.stringify({
-    //     access: localStorage.getItem('access'),
-    //     refresh: localStorage.getItem('refresh'),
-    //   }),
-    // },
   });
   if (!instance) {
     console.log('There was an error axios create');

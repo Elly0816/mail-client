@@ -1,11 +1,16 @@
 import { Button, Form, Input } from 'antd';
 import React, { useContext } from 'react';
-import { authContext, authContextType, methContextType } from '../../App';
+import {
+  authContext,
+  authContextType,
+  notificationContext,
+  notificationContextType,
+} from '../../contexts/contexts';
 import { userFromDb } from '../../models/user.models';
 import { queryServer } from '../../utils/types/helper/helper';
 import { AxiosError } from 'axios';
-import { methContext } from '../../App';
 import { COLORS } from '../../constants/constants';
+import { Link, useNavigate } from 'react-router-dom';
 
 type Inputs = {
   email: string;
@@ -28,16 +33,20 @@ const formItemLayout = {
   },
 };
 
-const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
+const SignUpForm: React.FC = () => {
   const { setAuth, setUser } = useContext(authContext) as authContextType;
+  const { signingUp, loginInstead } = useContext(
+    notificationContext
+  ) as notificationContextType;
+  const navigate = useNavigate();
 
   const [form] = Form.useForm();
 
-  const { toggle } = useContext(methContext) as methContextType;
+  // const { toggle } = useContext(methContext) as methContextType;
 
   const onFinish = (values: Inputs) => {
-    setLoading(true);
-
+    // setLoading(true);
+    signingUp();
     queryServer({
       formdata: { email: values.email, password: values.password },
       method: 'post',
@@ -47,19 +56,25 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
         const { user } = res.data;
         console.log(res);
         if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
+
           setUser && setUser(user as userFromDb);
           setAuth && setAuth(true);
         }
       })
+      .then(() => {
+        navigate('/');
+      })
       .catch((e: AxiosError) => {
         if (e.response?.status === 403) {
-          //   navigate('/login');
+          navigate('/login');
+          loginInstead();
         }
         setAuth && setAuth(false);
         console.log(e);
       });
     // navigate('');
-    setLoading(false);
+    // setLoading(false);
     console.log('Success:', values);
   };
 
@@ -144,11 +159,11 @@ const SignUpForm: React.FC<loginFormInput> = ({ setLoading }) => {
           style={{ color: COLORS.secondary }}
           // type="primary"
           className="hover:cursor-pointer w-fit"
-          onClick={() => {
-            toggle();
-          }}
+          // onClick={() => {
+          //   navigate('/login');
+          // }}
         >
-          <h3>Login Instead</h3>
+          <Link to={'/login'}>Login Instead</Link>
         </div>
       </div>
     </Form>

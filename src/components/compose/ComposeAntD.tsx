@@ -1,42 +1,69 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Button, Input, Layout, Space } from 'antd';
+import { useContext, useEffect, useState } from 'react';
+import { Button, Drawer, Input, Layout, Space } from 'antd';
 import { queryServer } from '../../utils/types/helper/helper';
 import { userFromDb } from '../../models/user.models';
 import { COLORS } from '../../constants/constants';
 import { messageFromDb } from '../../models/message.models';
 import { threadFromDb } from '../../models/thread.models';
-import { authContext } from '../../App';
+import {
+  emailsContext,
+  drawerContext,
+  drawerPropsType,
+  emailContextType,
+  authContextType,
+  authContext,
+  threadContext,
+  ThreadContextType,
+  notificationContext,
+  notificationContextType,
+} from '../../contexts/contexts';
+import TextArea from 'antd/es/input/TextArea';
+import { useNavigate } from 'react-router-dom';
 
-const { TextArea } = Input;
+const Compose: React.FC = () => {
+  const { isOpen, setIsOpen } = useContext(drawerContext) as drawerPropsType;
+  const { setUser } = useContext(authContext) as authContextType;
 
-interface Compose {
-  otherUserEmail?: string;
-  currentThreadId?: string;
-  setUser: (user: userFromDb) => void;
-  setMessages: (message: messageFromDb | messageFromDb[] | undefined) => void;
-  setCurrentThreadId: (id: string) => void;
-  setOtherUserEmail?: (email: string) => void;
-  messages: messageFromDb[];
-}
+  const { sendingMessage, messageSent, notSendButAuth } = useContext(
+    notificationContext
+  ) as notificationContextType;
 
-const App: React.FC<Compose> = ({
-  otherUserEmail,
-  currentThreadId,
-  setUser,
-  setMessages,
-  setCurrentThreadId,
-  setOtherUserEmail,
-}) => {
-  const [emailTo, setEmailTo] = useState('');
-  const [emailMessage, setEmailMessage] = useState('');
-  const [emailTitle, setEmailTitle] = useState('');
-  const { setShouldFetch } = useContext(authContext);
+  const { userTo, setUserTo, setMessages, threadId, setThreadId, setCantSend } =
+    useContext(emailsContext) as emailContextType;
 
-  const [disabled, setDisabled] = useState(true);
+  const { setShouldFetch } = useContext(threadContext) as ThreadContextType;
+
+  const onClose = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const [emailTo, setEmailTo] = useState<string | undefined>();
+  const [emailMessage, setEmailMessage] = useState<string | undefined>();
+  const [emailTitle, setEmailTitle] = useState<string | undefined>();
+  const [disabled, setDisabled] = useState<boolean>(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userTo) {
+      setEmailTo(userTo as string);
+      setDisabled(false);
+    } else {
+      setEmailTo(undefined);
+    }
+  }, [userTo, setEmailTo]);
+
+  useEffect(() => {
+    if (emailTo && emailMessage && emailTitle) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+  }, [emailTo, emailMessage, emailTitle]);
 
   const sendEmail: () => void = () => {
-    console.log(currentThreadId, 'zzz');
+    console.log(threadId, 'zzz');
     setDisabled(true);
+    sendingMessage();
     queryServer({
       method: 'post',
       url: '/message',
@@ -44,157 +71,130 @@ const App: React.FC<Compose> = ({
         title: emailTitle,
         body: emailMessage,
         to: emailTo,
-        threadId: currentThreadId,
+        threadId: threadId,
       },
     })
       .then((res) => {
         if (res.data) {
           setUser(res.data.user);
-          !otherUserEmail && setEmailTo('');
+          !setUserTo && setEmailTo('');
           setEmailTitle('');
           setEmailMessage('');
           setDisabled(false);
           console.log(JSON.stringify(res.data.user) + 'xxx');
           const newMessage: messageFromDb = res.data.message as messageFromDb;
           const thread = res.data.thread as threadFromDb;
-          if (currentThreadId) {
-            setMessages(newMessage);
+          if (threadId) {
+            setMessages((msgs) => [...msgs, newMessage]);
           } else {
             setMessages([newMessage]);
           }
-          if (currentThreadId !== thread._id) {
+          if (threadId !== thread._id) {
             console.log(`in if current == new message`);
             console.log(JSON.stringify(newMessage));
             console.log(thread._id);
-            setCurrentThreadId(thread._id);
+            setThreadId(thread._id);
           }
           setUser(res.data.user as userFromDb);
-          // setEmailTo(
-          //   newMessage.from == res.data.user.email
-          //     ? newMessage.to
-          //     : newMessage.from
-          // );
-          // !otherUserEmail &&
-          setOtherUserEmail &&
-            setOtherUserEmail(
+
+          setUserTo &&
+            setUserTo(
               newMessage.from == res.data.user.email
                 ? newMessage.to
                 : newMessage.from
             );
         }
+        setIsOpen(!isOpen);
+        messageSent();
+        setShouldFetch && setShouldFetch(true);
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         console.log(err);
         setDisabled(false);
-      })
-      .finally(() => {
-        setShouldFetch && setShouldFetch(true);
+        if (err.message.includes('401')) {
+          navigate('/login');
+          setCantSend(true);
+        } else {
+          notSendButAuth();
+        }
       });
+    // .finally(() => {
+    // });
   };
-  useEffect(() => {
-    // if (userTo) {
-    otherUserEmail && setEmailTo(otherUserEmail);
-    // }
-  }, [otherUserEmail]);
 
-  useEffect(() => {
-    emailMessage && emailTitle && emailTo
-      ? setDisabled(false)
-      : setDisabled(true);
-  }, [emailTo, emailMessage, emailTitle]);
+  let title = 'Send a message';
 
-  // useEffect(() => {
-  //   if (messages[0]?.threadId != currentThreadId) {
-  //     messages &&
-  //       messages[0]?.threadId != currentThreadId &&
-  //       setCurrentThreadId(messages[0]?.threadId);
-  //   }
-  // }, [messages, setCurrentThreadId]);
+  if (userTo) {
+    title = title + ` to ${userTo}`;
+  }
 
   return (
-    <Layout className="bottom-0" style={{}}>
-      <Space
-        className="border-10 border-black p-5"
-        direction="vertical"
-        size="large"
-        style={{ backgroundColor: COLORS.base }}
-      >
-        {/* <> */}
-        {/* {!otherUserEmail && ( */}
-        {otherUserEmail ? (
-          <div
-            className="text-lg font-semibold"
-            style={{ backgroundColor: COLORS.base, color: COLORS.primary }}
-          >
-            <h5>{`Continue conversation with: ${otherUserEmail}`}</h5>
-            {/* <Button
-              className="m-3"
-              style={{ color: 'whitesmoke', backgroundColor: COLORS.secondary }}
-              onClick={setOtherUserEmail}
-            >
-              Click to start a new thread
-            </Button> */}
-          </div>
-        ) : (
-          <div
-            className="text-lg font-semibold"
-            style={{ color: COLORS.primary }}
-          >
-            <h5>{`Start a new Thread`}</h5>
-          </div>
-        )}
-        <Input
-          allowClear
-          placeholder="Email to: ..."
-          onChange={(e) => setEmailTo(e.target.value)}
-          value={emailTo}
-          disabled={otherUserEmail ? true : false}
-          // style={{ height: '10px' }}
-        />
-        {/* )} */}
-
-        {/* <div style={{ margin: '10px 0' }} /> */}
-        <Input
-          allowClear
-          placeholder="Message Title: ..."
-          // autoSize={{ minRows: 2, maxRows: 6 }}
-          value={emailTitle}
-          onChange={(e) => setEmailTitle(e.target.value)}
-          // style={{ height: '10px' }}
-        />
-        {/* <div style={{ margin: '10px 0' }} /> */}
-        <div className="flex space-between w-full items-center justify-evenly">
-          {/* <Space
-            align="center"
-            size={'large'}
-            className="flex space-around overflow-y w-fit"
-          > */}
-          <TextArea
-            value={emailMessage}
+    <Drawer
+      title={title}
+      placement="bottom"
+      width={500}
+      onClose={onClose}
+      open={isOpen}
+      // extra={
+      //   <Space>
+      //     <Button onClick={onClose}>Cancel</Button>
+      //     <Button type="primary" onClick={onClose}>
+      //       OK
+      //     </Button>
+      //   </Space>
+      // }
+    >
+      <Layout className="bottom-0" style={{}}>
+        <Space
+          className="border-10 border-black p-5"
+          direction="vertical"
+          size="large"
+          style={{ backgroundColor: COLORS.base }}
+        >
+          <Input
             allowClear
-            onChange={(e) => setEmailMessage(e.target.value)}
-            placeholder="Message..."
-            autoSize={{ maxRows: 5, minRows: 3 }}
-            className="w-10/12 h-full"
+            placeholder="Email to: ..."
+            onChange={(e) => setEmailTo(e.target.value)}
+            value={emailTo}
+            disabled={userTo ? true : false}
+            // style={{ height: '10px' }}
           />
-          <Button
-            onClick={() => {
-              console.log('hey');
-              sendEmail();
-            }}
-            disabled={disabled}
-            style={{ backgroundColor: COLORS.secondary, color: 'white' }}
-            className="rounded-full "
-          >
-            Send
-          </Button>
-          {/* </Space> */}
-        </div>
-      </Space>
+          <Input
+            allowClear
+            placeholder="Message Title: ..."
+            // autoSize={{ minRows: 2, maxRows: 6 }}
+            value={emailTitle}
+            onChange={(e) => setEmailTitle(e.target.value)}
+            // style={{ height: '10px' }}
+          />
+          <div className="flex space-between w-full items-center justify-evenly">
+            <TextArea
+              value={emailMessage}
+              allowClear
+              onChange={(e) => setEmailMessage(e.target.value)}
+              placeholder="Message..."
+              autoSize={{ maxRows: 5, minRows: 3 }}
+              className="w-10/12 h-full"
+            />
+            <Button
+              onClick={() => {
+                console.log('hey');
+                sendEmail();
+              }}
+              disabled={disabled}
+              style={{ backgroundColor: COLORS.secondary, color: 'white' }}
+              className="rounded-full "
+            >
+              Send
+            </Button>
+            {/* </Space> */}
+          </div>
+        </Space>
 
-      {/* </> */}
-    </Layout>
+        {/* </> */}
+      </Layout>
+    </Drawer>
   );
 };
 
-export default App;
+export default Compose;

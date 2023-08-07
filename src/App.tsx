@@ -2,115 +2,235 @@ import './App.css';
 import HomePage from './pages/homepage/Homepage2';
 import LoginPage from './pages/loginpage/loginPage';
 import { useCallback, useEffect, useState } from 'react';
-import { createContext } from 'react';
+import {
+  authContext,
+  emailsContext,
+  drawerContext,
+  threadContext,
+  notificationContext,
+} from './contexts/contexts';
 import { userFromDb } from './models/user.models';
 import SignUpPage from './pages/signuppage/signupPage';
 import {
-  Layout,
-  Spin,
+  message,
   // message
 } from 'antd';
-import useFetch from './hooks/useFetch';
 import { messageFromDb } from './models/message.models';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import WelcomePage from './pages/welcomePage/WelcomePage';
+import { threadFromDb } from './models/thread.models';
+import InboxPage from './pages/inboxpage/InboxPage';
+import MessagePage from './pages/messagepage/Messages';
+import { queryServer } from './utils/types/helper/helper';
 // import { COLORS } from './constants/constants';
 
-export interface authContextType {
-  user?: userFromDb | undefined;
-  auth?: boolean;
-  setUser?: React.Dispatch<React.SetStateAction<userFromDb | undefined>>;
-  setAuth?: React.Dispatch<React.SetStateAction<boolean>>;
-  setShouldFetch?: React.Dispatch<React.SetStateAction<boolean>>;
-  addUnread?: (threadId: string, unread: number) => void;
-  unreadCount?: { threads: string[]; unread: number };
-  removeUnread?: (locUnrea: number) => void;
-  shouldFetch?: boolean;
-}
-
-export interface methContextType {
-  meth: 'login' | 'signup';
-  toggle: () => void;
-}
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <WelcomePage />,
+  },
+  {
+    path: '/homepage',
+    element: <HomePage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  { path: '/signup', element: <SignUpPage /> },
+  {
+    path: '/inbox',
+    element: <InboxPage />,
+  },
+  { path: '/messages/:id', element: <MessagePage /> },
+]);
 
 function App() {
-  const [user, setUser] = useState<userFromDb | undefined>();
-  const [meth, setMeth] = useState<'login' | 'signup'>('signup');
-  // const [messageApi, contextHolder] = message.useMessage();
+  const [user, setUser] = useState<userFromDb | undefined>(
+    JSON.parse(localStorage.getItem('user') as string) as userFromDb
+  );
   const [unreadCount, setUnreadCount] = useState<{
-    threads: string[];
-    unread: number;
-  }>({ threads: [], unread: 0 });
+    threads: threadFromDb[];
+    unread: number[];
+  }>();
+
+  const [otherUser, setOtherUser] = useState<string[]>();
 
   const [messages, setMessages] = useState<messageFromDb[]>([]);
 
+  const [userTo, setUserTo] = useState<string | undefined>();
+
   const [auth, setAuth] = useState<boolean>(false);
 
-  const { data, error, loading } = useFetch({ method: 'get', path: '' });
-  const [shouldFetch, setShouldFetch] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const toggle = useCallback(() => {
-    if (meth == 'login') {
-      setMeth('signup');
-    } else {
-      setMeth('login');
-    }
-  }, [meth]);
+  const [threadId, setThreadId] = useState<string | undefined>();
+
+  const [shouldFetch, setShouldFetch] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [cantSend, setCantSend] = useState<boolean>(false);
+
+  // const [reloading, setReloading] = useState<boolean>(false);
+  const fetchingInbox = useCallback(() => {
+    messageApi.destroy();
+    messageApi.open({
+      type: 'loading',
+      content: 'Fetching Inbox',
+      duration: 0,
+    });
+  }, [messageApi]);
+
+  const sendingMessage = useCallback(() => {
+    messageApi.open({
+      type: 'loading',
+      content: 'Sending Message',
+      duration: 0,
+    });
+  }, [messageApi]);
+
+  const messageSent = useCallback(() => {
+    messageApi.destroy();
+    messageApi.open({ type: 'success', content: 'Message Sent' });
+  }, [messageApi]);
+
+  const loggingOut = useCallback(() => {
+    messageApi.open({
+      type: 'loading',
+      content: 'Logging Out',
+      duration: 0,
+    });
+  }, [messageApi]);
+
+  const sessionExpired = useCallback(() => {
+    messageApi.destroy();
+    messageApi.open({
+      type: 'warning',
+      content: 'Session Expired\nYou have been logged out',
+    });
+  }, [messageApi]);
+
+  const destroy = useCallback(() => {
+    messageApi.destroy();
+  }, [messageApi]);
+
+  const notSendButAuth = useCallback(() => {
+    messageApi.destroy();
+    messageApi.open({
+      type: 'warning',
+      content: 'There was an error sending the message',
+    });
+  }, [messageApi]);
+
+  const loginInstead = useCallback(() => {
+    messageApi.destroy();
+    messageApi.open({
+      type: 'warning',
+      content: 'Login Instead',
+    });
+  }, [messageApi]);
+
+  const signUpInstead = useCallback(() => {
+    messageApi.destroy();
+    messageApi.open({
+      type: 'warning',
+      content: 'SignUp Instead',
+    });
+  }, [messageApi]);
+
+  const logginIn = useCallback(() => {
+    messageApi.open({
+      type: 'loading',
+      content: 'Logging In',
+      duration: 0,
+    });
+  }, [messageApi]);
+
+  const signingUp = useCallback(() => {
+    messageApi.open({
+      type: 'loading',
+      content: 'Signing Up',
+      duration: 0,
+    });
+  }, [messageApi]);
+
+  const wrongCredentials = useCallback(() => {
+    messageApi.destroy();
+    messageApi.open({
+      type: 'warning',
+      content: 'Make sure your email and password are correct',
+    });
+  }, [messageApi]);
 
   useEffect(() => {
-    if (data) {
-      setUser(data.user);
-      setAuth(true);
-    } else {
-      if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
-        setAuth(false);
+    let url = window.location.href;
+    const showCantSend = () => {
+      while (!url.includes('login')) {
+        console.log('session Expired and waiting');
+        showCantSend();
+        url = window.location.href;
       }
+      console.log('session Expired');
+      sessionExpired();
+    };
+    if (cantSend) {
+      showCantSend();
+      setCantSend(false);
     }
-  }, [data]);
+    setCantSend(false);
+  }, [cantSend, setCantSend, sessionExpired]);
 
-  const addUnread: (threadId: string, locUnreadCount: number) => void = (
-    threadId,
-    locUnreadCount
-  ) => {
-    if (unreadCount.threads.includes(threadId)) {
-      return;
-    } else {
-      setUnreadCount(({ threads, unread }) => {
-        threads.push(threadId);
-        unread += locUnreadCount;
-        return { threads, unread };
-      });
-      // setUnreadCount(({ threads, unread }) => {
-      //   if (threads.includes(threadId)) {
-      //     return { threads, unread };
-      //   } else {
-      //     threads.push(threadId);
-      //     unread += unreadCount;
-      //     return { threads, unread };
-      //   }
-    }
-  };
+  useEffect(() => {
+    console.log('This is the user: ', user);
+  }, [user]);
 
-  const removeUnread: (locUnreadCount: number) => void = (locUnreadCount) => {
-    setUnreadCount(({ threads, unread }) => {
-      unread -= locUnreadCount;
-      return { threads, unread };
-    });
-  };
-
-  const changeMessages: (
-    newMessages?: messageFromDb[] | messageFromDb | undefined
-  ) => void = (newMessages?) => {
-    const newData = newMessages;
-    console.log('changing messages: ' + newData);
-    if (newData) {
-      if (Array.isArray(newData)) {
-        setMessages(() => [...newData]);
-      } else {
-        setMessages((messages) => [...messages, newData]);
+  useEffect(() => {
+    if (shouldFetch) {
+      // setReloading(true);
+      if (user?._id) {
+        fetchingInbox();
       }
-    } else {
-      setMessages([]);
+      queryServer({
+        method: 'get',
+        url: `/thread/${user?._id}`,
+        formdata: null,
+      })
+        .then((res) => {
+          const data = res.data;
+          const unread = data.unread as unknown as number[];
+          // setUnread(unread);
+          const threads = data.message as unknown as threadFromDb[];
+          const otherUser = data.otherUser as unknown as string[];
+          setOtherUser(otherUser);
+          // setThreads(threads);
+          setUnreadCount({ threads: threads, unread: unread });
+          setUser(data.user);
+          setAuth(true);
+        })
+        .catch((error) => {
+          if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
+            setAuth && setAuth(false);
+            setUser && setUser(undefined);
+            sessionExpired();
+            window.location.href = '/login';
+          }
+        })
+        .finally(() => {
+          setShouldFetch(false);
+          messageApi.destroy();
+          // setReloading(false);
+        });
     }
-  };
+  }, [
+    setAuth,
+    setUser,
+    messages,
+    user?._id,
+    shouldFetch,
+    setShouldFetch,
+    fetchingInbox,
+    messageApi,
+    sessionExpired,
+  ]);
 
   const main = (
     <authContext.Provider
@@ -119,59 +239,63 @@ function App() {
         user,
         setUser,
         setAuth,
-        addUnread,
-        unreadCount,
-        removeUnread,
-        shouldFetch,
-        setShouldFetch,
+        sessionExpired,
+        // addUnread,
+        // removeUnread,
+        // shouldFetch,
+        // setShouldFetch,
       }}
     >
-      {/* {contextHolder} */}
-      {auth ? (
-        <HomePage
-          setUnreadCount={() => {
-            setUnreadCount({ threads: [], unread: 0 });
-          }}
-          messages={messages}
-          setMessages={changeMessages}
-        />
-      ) : (
-        // <div>Hey!</div>
-        <methContext.Provider value={{ meth, toggle }}>
-          {/* {contextHolder} */}
-          <Layout
-            className=""
-            // style={{ backgroundColor: COLORS.base, color: COLORS.accent }}
+      <threadContext.Provider
+        value={{
+          setUnreadCount,
+          unreadCount,
+          otherUser,
+          setOtherUser,
+          shouldFetch,
+          setShouldFetch,
+        }}
+      >
+        <drawerContext.Provider value={{ isOpen, setIsOpen }}>
+          <emailsContext.Provider
+            value={{
+              messages,
+              userTo,
+              threadId,
+              setThreadId,
+              setUserTo,
+              setMessages,
+              setCantSend,
+            }}
           >
-            {meth == 'login' ? <LoginPage /> : <SignUpPage />}
-          </Layout>
-        </methContext.Provider>
-      )}
+            <notificationContext.Provider
+              value={{
+                loggingOut,
+                fetchingInbox,
+                sendingMessage,
+                messageSent,
+                sessionExpired,
+                notSendButAuth,
+                loginInstead,
+                signUpInstead,
+                logginIn,
+                signingUp,
+                wrongCredentials,
+                destroy,
+              }}
+            >
+              {contextHolder}
+              <RouterProvider router={router} />
+            </notificationContext.Provider>
+          </emailsContext.Provider>
+        </drawerContext.Provider>
+      </threadContext.Provider>
     </authContext.Provider>
   );
 
-  const child = loading ? (
-    <Layout>
-      <div className="h-screen p-auto flex justify-center items-center">
-        <Spin />
-      </div>
-    </Layout>
-  ) : (
-    main
-  );
-
-  return child;
-  // <authContext.Provider value={{ auth, user, setUser, setAuth }}>
-  // {/* {contextHolder} */}
-
-  // </authContext.Provider>
+  return main;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const authContext = createContext<authContextType>({});
-// export {authContext};
-// eslint-disable-next-line react-refresh/only-export-components
-export const methContext = createContext<methContextType | undefined>(
-  undefined
-);
+
 export default App;

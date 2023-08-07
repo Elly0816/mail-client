@@ -1,61 +1,133 @@
-// import { useContext } from 'react';
-// import { authContext } from '../../App';
+import { Link, useNavigate } from 'react-router-dom';
+import ToggleDrawerButton from '../drawerToggle/DrawerToggle';
+import { CSSProperties, useContext, useState } from 'react';
+import {
+  ThreadContextType,
+  authContext,
+  authContextType,
+  emailContextType,
+  emailsContext,
+  notificationContext,
+  notificationContextType,
+  threadContext,
+} from '../../contexts/contexts';
+import { Button } from 'antd';
+import { queryServer } from '../../utils/types/helper/helper';
+import { COLORS } from '../../constants/constants';
 
-// import React from 'react';
-// import { Breadcrumb, Layout, Menu, theme } from 'antd';
+interface HeaderProps {
+  h1: string;
+  message: string;
+  url: string;
+  linkText: string;
+  otherUrl: string | undefined;
+  otherLinkText: string | undefined;
+}
 
-// const { Header, Content, Footer } = Layout;
+const unreadCountStyle = {
+  backgroundColor: COLORS.unread,
+  color: COLORS.base,
+  padding: 10,
+} as CSSProperties;
 
-// const Navbar: React.FC = () => {
-//   const {
-//     token: { colorBgContainer },
-//   } = theme.useToken();
-//   const { auth } = useContext(authContext);
+const Header: React.FC<HeaderProps> = ({
+  h1,
+  linkText,
+  message,
+  url,
+  otherUrl,
+  otherLinkText,
+}) => {
+  const { setUserTo, setMessages } = useContext(
+    emailsContext
+  ) as emailContextType;
+  const { setAuth, setUser } = useContext(authContext) as authContextType;
+  const [loading, setLoading] = useState<boolean>(false);
 
-//   return (
-//     <Layout>
-//       <Header
-//         style={{
-//           position: 'sticky',
-//           top: 0,
-//           zIndex: 1,
-//           width: '100%',
-//           display: 'flex',
-//           alignItems: 'center',
-//           height: '15vh',
-//         }}
-//       >
-//         <div className="demo-logo" />
-//         <Menu
-//           theme="dark"
-//           mode="horizontal"
-//           defaultSelectedKeys={['2']}
-//           items={new Array(3).fill(null).map((_, index) => ({
-//             key: String(index + 1),
-//             label: `nav ${index + 1}`,
-//           }))}
-//         />
-//       </Header>
-//       <Content
-//         className="site-layout"
-//         style={{ padding: '0 50px', height: '80vh' }}
-//       >
-//         <Breadcrumb style={{ margin: '16px 0' }}>
-//           <Breadcrumb.Item>Home</Breadcrumb.Item>
-//           <Breadcrumb.Item>List</Breadcrumb.Item>
-//           <Breadcrumb.Item>App</Breadcrumb.Item>
-//         </Breadcrumb>
-//         <div
-//           style={{ padding: 24, minHeight: 380, background: colorBgContainer }}
-//         >
-//           Content
-//         </div>
-//       </Content>
-//       <Footer style={{ textAlign: 'center', height: '10vh' }}>
-//         Ant Design ©2023 Created by Ant UED
-//       </Footer>
-//     </Layout>
-//   );
-// };
+  const { setUnreadCount, unreadCount, setShouldFetch } = useContext(
+    threadContext
+  ) as ThreadContextType;
 
-// export default Navbar;
+  const { destroy, loggingOut } = useContext(
+    notificationContext
+  ) as notificationContextType;
+
+  const navigate = useNavigate();
+  const logout: () => void = () => {
+    loggingOut();
+    setLoading(true);
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    setAuth && setAuth(false);
+    setUser && setUser(undefined);
+    setUnreadCount && setUnreadCount(undefined);
+    setMessages([]);
+    queryServer({ method: 'post', url: '/logout', formdata: null })
+      .then((res) => {
+        console.log('+++' + JSON.stringify(res));
+        if (res.status === 200) {
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      })
+      .finally(() => {
+        destroy();
+        navigate('/login');
+      });
+  };
+
+  return (
+    <div className="font-black text-left text-xl flex flex-row justify-evenly items-end my-5">
+      <h1>{h1}</h1>
+      {unreadCount &&
+        unreadCount.unread.reduce((prev, curr) => prev + curr) > 0 && (
+          <div
+            className="rounded-full h-10 w-15 text-base"
+            style={unreadCountStyle}
+          >
+            <p> {unreadCount.unread.reduce((prev, curr) => prev + curr)}</p>
+          </div>
+        )}
+      <ToggleDrawerButton message={message} />
+      <Link
+        className="font-normal text-base"
+        to={url}
+        onClick={() => {
+          setUserTo(undefined);
+        }}
+      >
+        {linkText}
+      </Link>
+      {otherUrl && (
+        <Link
+          className="font-normal text-base"
+          to={otherUrl}
+          onClick={() => {
+            setUserTo(undefined);
+          }}
+        >
+          {otherLinkText}
+        </Link>
+      )}
+      <Button
+        onClick={() => {
+          setShouldFetch(true);
+        }}
+      >
+        Refresh Inbox
+      </Button>
+      <Button
+        onClick={() => {
+          !loading && logout();
+        }}
+      >
+        Logout
+      </Button>
+    </div>
+  );
+};
+
+export default Header;

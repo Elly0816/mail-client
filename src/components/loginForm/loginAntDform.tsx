@@ -1,12 +1,18 @@
 import React, { useContext } from 'react';
 import { Button, Form, Input } from 'antd';
-import { authContext, authContextType, methContextType } from '../../App';
+import {
+  authContext,
+  authContextType,
+  notificationContext,
+  notificationContextType,
+} from '../../contexts/contexts';
 import { queryServer } from '../../utils/types/helper/helper';
 import { userFromDb } from '../../models/user.models';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import './loginForm.css';
-import { methContext } from '../../App';
 import { COLORS } from '../../constants/constants';
+import { Link, useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 
 type Inputs = {
   email: string;
@@ -18,12 +24,17 @@ export interface loginFormInput {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
+const LoginForm: React.FC = () => {
   const { setAuth, setUser } = useContext(authContext) as authContextType;
-  const { toggle } = useContext(methContext) as methContextType;
-  const onFinish = (values: Inputs) => {
-    setLoading(true);
+  const { signUpInstead, logginIn, destroy, wrongCredentials } = useContext(
+    notificationContext
+  ) as notificationContextType;
 
+  const navigate = useNavigate();
+  // const { toggle } = useContext(methContext) as methContextType;
+  const onFinish = (values: Inputs) => {
+    // setLoading(true);
+    logginIn();
     queryServer({
       formdata: { email: values.email, password: values.password },
       method: 'post',
@@ -33,16 +44,35 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
         const { user } = res.data;
         console.log(res);
         if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
           setUser && setUser(user as userFromDb);
           setAuth && setAuth(true);
         }
       })
+      .then(() => {
+        destroy();
+        navigate('/');
+      })
       .catch((e) => {
+        destroy();
         setAuth && setAuth(false);
         console.log(e);
+        if (isAxiosError(e)) {
+          console.log('Axios error');
+          const errorMessage = (
+            e.response?.data.message as string
+          ).toLowerCase();
+          if (errorMessage.includes('not found')) {
+            signUpInstead();
+            navigate('/signup');
+          } else if (errorMessage.includes('incorrect')) {
+            wrongCredentials();
+          }
+        }
+        // destroy();
       });
     // navigate('');
-    setLoading(false);
+    // setLoading(false);
 
     console.log('Success:', values);
   };
@@ -85,16 +115,16 @@ const LoginForm: React.FC<loginFormInput> = ({ setLoading }) => {
         >
           Log in
         </Button>
-        <h3
+        <div
           style={{ color: COLORS.secondary }}
-          className="hover:cursor-pointer"
           // type="primary"
-          onClick={() => {
-            toggle();
-          }}
+          className="hover:cursor-pointer w-fit"
+          // onClick={() => {
+          //   navigate('/login');
+          // }}
         >
-          SignUp Instead
-        </h3>
+          <Link to={'/signup'}>SignUp Instead</Link>
+        </div>
       </div>
       {/* </Form.Item> */}
     </Form>

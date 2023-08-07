@@ -25,6 +25,7 @@ const useLocalStorage = ({
     }
     if (!value) {
       const newItem = localStorage.getItem(name);
+      console.log('new Item: ', newItem);
       if (newItem) {
         setItem(newItem);
       } else {

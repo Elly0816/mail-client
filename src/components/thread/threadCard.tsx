@@ -1,100 +1,128 @@
-import { Card } from 'antd';
-import React, { useContext, useState } from 'react';
+import { List } from 'antd';
+import React, { CSSProperties, useContext } from 'react';
 import { threadFromDb } from '../../models/thread.models';
-import { authContext } from '../../App';
 import {
   getNameFromUser,
   transformDate,
 } from '../../utils/types/helper/helper';
-import { threadContext } from '../../pages/homepage/Homepage2';
 import { COLORS } from '../../constants/constants';
 import './Thread.css';
+import { useNavigate } from 'react-router-dom';
+import {
+  ThreadContextType,
+  emailContextType,
+  emailsContext,
+  threadContext,
+} from '../../contexts/contexts';
 
-const App: React.FC<{
-  thread: threadFromDb;
-  // addUnread: (unread: number) => void;
-  unread?: number;
-  otherUser?: string;
-}> = ({ thread, otherUser, unread }) => {
-  const { removeUnread } = useContext(authContext);
-  const {
-    // currentThreadId,
-    setThread,
-    changeOtherUser: setUserTo,
-    setMessages,
-  } = useContext(threadContext);
+interface threadItemProps {
+  otherUser: string[];
+  item: threadFromDb;
+  data: threadFromDb[];
+  unreadCount:
+    | {
+        threads: threadFromDb[];
+        unread: number[];
+      }
+    | undefined;
+}
 
-  const [canRemove, setCanRemove] = useState<boolean>(true);
-  const { currentThreadId } = useContext(threadContext);
+const unreadStyle = {
+  fontWeight: 'bolder',
+} as CSSProperties;
 
-  return (
-    <Card
-      title={
-        <div
-          style={{ color: COLORS.primary }}
-          className={`center flex flex-col  ${
-            canRemove && unread && unread > 0 ? 'font-extrabold' : 'font-medium'
-          } justify-between	`}
-        >
-          <div className="text-start font-thin">
-            <h4>{`${getNameFromUser(otherUser as string)}`}</h4>
-          </div>
-        </div>
-      }
-      cover={
-        <div className="font-semibold">
-          <h3>Title: {thread.lastTitle}</h3>
-        </div>
-      }
-      bordered={true}
-      hoverable
-      extra={
-        !canRemove ||
-        (unread && unread > 0 ? (
-          <div className="bg-green-600 text-white shadow-lg rounded-2xl w-7">
-            <h6 className="text-white-600">{`${unread}`}</h6>
-          </div>
-        ) : null)
-      }
-      className={`threadCard rounded-none p-0
-       hover:cursor-pointer ${
-         currentThreadId && currentThreadId == thread._id && 'isThread'
-       } `}
-      // loading={loading}
-      onClick={() => {
-        if (currentThreadId != thread._id) {
-          setThread && setThread(thread._id);
-          canRemove && removeUnread && removeUnread(unread as number);
-          setCanRemove(false);
-          setUserTo && setUserTo(otherUser as string);
-          setMessages && setMessages(undefined);
+const unreadCountStyle = {
+  backgroundColor: COLORS.unread,
+  color: COLORS.base,
+  padding: 10,
+} as CSSProperties;
+
+const ThreadItem: React.FC<threadItemProps> = ({
+  otherUser,
+  item,
+  data,
+  unreadCount,
+}) => {
+  const { setMessages, setThreadId } = useContext(
+    emailsContext
+  ) as emailContextType;
+
+  const { setUnreadCount } = useContext(threadContext) as ThreadContextType;
+  const navigate = useNavigate();
+
+  const markAsRead: () => void = () => {
+    setUnreadCount &&
+      setUnreadCount((value) => {
+        let newData;
+        if (value != undefined) {
+          const currentUnread = value.unread;
+          currentUnread[data?.indexOf(item) as number] = 0;
+          newData = { threads: value.threads, unread: currentUnread };
         }
-        // setThread && setThread(currentThreadId as string);
+        return newData;
+      });
+  };
+  return (
+    <List.Item
+      onClick={() => {
+        setMessages([]);
+        markAsRead();
+        setThreadId(unreadCount?.threads[data?.indexOf(item) as number]._id);
+        navigate(`/messages/${item._id}`);
       }}
-    >
-      <div
-        className="flex flex-grow m-0 px-0 flex-col w-full"
-        // style={{ backgroundColor: COLORS.base }}
-      >
-        <div className="flex flex-row font-light justify-start">
+      className="isThread"
+      extra={
+        <div
+          className="rounded-full h-10 w-10"
+          style={
+            unreadCount && unreadCount.unread[data?.indexOf(item) as number] > 0
+              ? unreadCountStyle
+              : {}
+          }
+        >
           <p>
-            {thread.lastMessage && thread.lastMessage.substring(0, 25) + '...'}
+            {' '}
+            {unreadCount &&
+              unreadCount.unread[data?.indexOf(item) as number] > 0 &&
+              unreadCount.unread[data?.indexOf(item) as number]}
           </p>
         </div>
-        <div>
-          {/* {data ? ( */}
-          <div className="flex flex-row text-xs justify-end">
-            {/* <p>{transformDate(data.message.lastModified).date}</p> */}
-            <p>{transformDate(thread.lastModified).time}</p>
-          </div>
-          {/* ) : ( */}
-          {/* <Spin />
-              )} */}
+      }
+      title={otherUser && otherUser[data?.indexOf(item) as number]}
+      style={
+        unreadCount && unreadCount.unread[data?.indexOf(item) as number] > 0
+          ? unreadStyle
+          : {}
+      }
+    >
+      <List.Item.Meta
+        className="flex flex-row text-left"
+        // avatar={<Avatar src={item.picture.large} />}
+        title={
+          otherUser && getNameFromUser(otherUser[data?.indexOf(item) as number])
+        }
+        description={
+          item.lastTitle &&
+          // <div>
+          item.lastTitle
+            .toUpperCase()
+            .concat(' - ', item.lastMessage)
+            .substring(0, 35)
+            .concat('...')
+          // </div>
+        }
+        // description={item.lastMessage}
+      />
+      {item.lastModified && (
+        <div className="flex flex-col text-right font text-xs">
+          <h6>{transformDate(item.lastModified).date}</h6>
+          <h6>{transformDate(item.lastModified).time}</h6>
+          {/* {unreadCount && unreadCount.unread[data?.indexOf(item) as number]} */}
         </div>
-        {/* <p>{data.name.last}</p> */}
-      </div>
-    </Card>
+      )}
+      {/* </Skeleton> */}
+    </List.Item>
   );
 };
 
-export default App;
+export default ThreadItem;

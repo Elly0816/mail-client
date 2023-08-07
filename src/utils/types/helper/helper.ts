@@ -32,9 +32,6 @@ const getNameFromUser = (input: string): string => {
 const transformDate: (curr: Date) => { date: string; time: string } = (
   curr
 ) => {
-  // const month = date.getMonth();
-  // const year = date.getFullYear();
-  // return `${month}, ${year}`;
   const date = new Date(curr).toDateString();
   const time = new Date(curr).toTimeString().split(' ')[0];
 

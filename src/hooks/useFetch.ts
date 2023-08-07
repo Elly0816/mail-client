@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
-// import { useLocation } from 'react-router-dom';
 import instance from '../controllers/axios.controllers';
 import { AxiosError, AxiosResponse } from 'axios';
 import { user, message } from '../utils/types/types.utils';
 export interface Usefetch {
   loading: boolean;
   error: Error | undefined;
-  // setCurrent: React.Dispatch<React.SetStateAction<UseFetchProps>>;
   data: AxiosResponse['data'] | undefined;
 }
 
@@ -14,10 +12,7 @@ export interface UseFetchProps {
   path: string | undefined;
   method: 'get' | 'post' | 'put' | 'patch' | 'delete' | undefined;
   formdata?: user | message | undefined;
-  // next: string;
 }
-
-// const BASE = 'http://localhost:5000';
 
 const useFetch = ({
   path,
@@ -50,12 +45,6 @@ UseFetchProps): Usefetch => {
     instance(config)
       .then(async (res: AxiosResponse) => {
         console.log(res);
-        // if (res.status.toString()[0] !== '2') {
-        // if (!res.data.error) {
-        //   setError(new Error(res.statusText));
-        //   setData(res.data);
-        // } else {
-        //   const resData = res.data;
         setData(res.data);
         setError(undefined);
         // }

@@ -2,7 +2,8 @@
   background-color: #b7c4cf;
 }
 
-.isThread {
+.isThread:hover {
   background-color: #b7c4cf;
   color: #0f4c75;
+  cursor: pointer;
 }

@@ -41,6 +41,10 @@ div {
   /* color: #0004; */
 }
 
+:root {
+  background-image: url('./assets/‪white-abstract.jpg');
+}
+
 /*
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

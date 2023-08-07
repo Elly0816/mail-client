@@ -61,9 +61,11 @@ const Homepage2: React.FC<HomePage> = () => {
           otherLinkText={undefined}
         />
         <div className="h-full flex-1">
-          <Title>{`Welcome back ${getNameFromUser(
-            user?.email as string
-          )}!`}</Title>
+          {user && (
+            <Title>{`Welcome back ${getNameFromUser(
+              user.email as string
+            )}!`}</Title>
+          )}
           <Title level={2}>
             {unreadCount &&
               `You have ${getUnreadFromState(

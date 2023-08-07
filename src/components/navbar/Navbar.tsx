@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({
     emailsContext
   ) as emailContextType;
   const { setAuth, setUser } = useContext(authContext) as authContextType;
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
   const { isOpen, setIsOpen } = useContext(drawerContext) as drawerPropsType;
 
   const { setUnreadCount, unreadCount, setShouldFetch } = useContext(
@@ -73,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({
   const navigate = useNavigate();
   const logout: () => void = () => {
     loggingOut();
-    setLoading(true);
+    // setLoading(true);
     localStorage.removeItem('access');
     localStorage.removeItem('refresh');
     setAuth && setAuth(false);
@@ -84,16 +84,16 @@ const Header: React.FC<HeaderProps> = ({
       .then((res) => {
         console.log('+++' + JSON.stringify(res));
         if (res.status === 200) {
-          setLoading(false);
+          // setLoading(false);
+          destroy();
+          navigate('/login');
         }
       })
       .catch((err) => {
         console.log(err);
-        setLoading(false);
-      })
-      .finally(() => {
         destroy();
         navigate('/login');
+        // setLoading(false);
       });
   };
 
@@ -207,7 +207,7 @@ const Header: React.FC<HeaderProps> = ({
 
       <MenuItem
         onClick={() => {
-          !loading && logout();
+          logout();
           setUserTo(undefined);
         }}
       >
@@ -284,8 +284,8 @@ const Header: React.FC<HeaderProps> = ({
               aria-label="account of current user"
               color="inherit"
               onClick={() => {
-                !loading && logout();
                 setUserTo(undefined);
+                logout();
               }}
             >
               <LogoutIcon />

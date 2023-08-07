@@ -128,6 +128,7 @@ const Header: React.FC<HeaderProps> = ({
       <IconButton
         onClick={() => {
           navigate(url);
+          setUserTo(undefined);
         }}
         title={text}
         size="large"
@@ -284,8 +285,8 @@ const Header: React.FC<HeaderProps> = ({
               aria-label="account of current user"
               color="inherit"
               onClick={() => {
-                setUserTo(undefined);
                 logout();
+                setUserTo(undefined);
               }}
             >
               <LogoutIcon />

@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import instance from '../../../controllers/axios.controllers';
+import { threadFromDb } from '../../../models/thread.models';
 
 const queryServer = ({
   method,
@@ -38,4 +39,10 @@ const transformDate: (curr: Date) => { date: string; time: string } = (
   return { date, time };
 };
 
-export { queryServer, getNameFromUser, transformDate };
+const getUnreadFromState: (unreadCount: {
+  threads: threadFromDb[];
+  unread: number[];
+}) => number = (unreadCount) => {
+  return unreadCount.unread.reduce((prev, curr) => prev + curr);
+};
+export { queryServer, getNameFromUser, transformDate, getUnreadFromState };

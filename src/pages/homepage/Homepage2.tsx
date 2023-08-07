@@ -1,19 +1,22 @@
 import React, { useContext, useEffect } from 'react';
-import { Card } from 'antd';
+import { Layout } from 'antd';
 // import useFetch from '../../hooks/useFetch';
-import { Button } from 'antd';
 import {
   threadContext,
   authContext,
   authContextType,
   ThreadContextType,
 } from '../../contexts/contexts';
-import { getNameFromUser } from '../../utils/types/helper/helper';
+import {
+  getNameFromUser,
+  getUnreadFromState,
+} from '../../utils/types/helper/helper';
 import { messageFromDb } from '../../models/message.models';
 import { useNavigate } from 'react-router-dom';
-import { COLORS } from '../../constants/constants';
 import Header from '../../components/navbar/Navbar';
 import Compose from '../../components/compose/ComposeAntD';
+import { Typography } from 'antd';
+import { threadFromDb } from '../../models/thread.models';
 
 interface HomePage {
   setUnreadCount?: () => void;
@@ -44,46 +47,32 @@ const Homepage2: React.FC<HomePage> = () => {
     console.log('Unread: ', unreadCount);
   }, [unreadCount]);
 
+  const { Title } = Typography;
+
   return (
     <>
-      <Header
-        h1={'HomePage'}
-        message={'Send New Message'}
-        url={'/inbox'}
-        linkText={'InboxPage'}
-        otherUrl={undefined}
-        otherLinkText={undefined}
-      />
-      <Card
-        title={
-          <div className="text-5xl text-left font-black">
-            {`Welcome back ${
-              user?.email && getNameFromUser(user?.email as string)
-            }!`}
-          </div>
-        }
-        bordered={false}
-        className="w-4/5 m-auto flex-row mt-20"
-        style={{ backgroundColor: COLORS.base }}
-      >
-        <div className="text-2xl">
-          <p>{`You have ${
-            unreadCount?.unread && unreadCount.unread.length > 0
-              ? unreadCount.unread.reduce((prev, curr) => prev + curr)
-              : 'no'
-          } Unread Messages`}</p>
-          <Button
-            type="primary"
-            className="bg-blue-500"
-            onClick={() => {
-              navigate('/inbox');
-            }}
-          >
-            Inbox
-          </Button>
+      <Layout className="h-screen flex bg-opacity-0">
+        <Header
+          h1={'HomePage'}
+          message={'Send New Message'}
+          url={'/inbox'}
+          linkText={'InboxPage'}
+          otherUrl={undefined}
+          otherLinkText={undefined}
+        />
+        <div className="h-full flex-1">
+          <Title>{`Welcome back ${getNameFromUser(
+            user?.email as string
+          )}!`}</Title>
+          <Title level={2}>
+            {unreadCount &&
+              `You have ${getUnreadFromState(
+                unreadCount as { threads: threadFromDb[]; unread: number[] }
+              )} Unread Messages!`}
+          </Title>
         </div>
-      </Card>
-      <Compose />
+        <Compose />
+      </Layout>
     </>
   );
 };

@@ -1,22 +1,14 @@
-import { Button } from 'antd';
-import { drawerContext, drawerPropsType } from '../../contexts/contexts';
-import { useContext } from 'react';
+// import { drawerContext, drawerPropsType } from '../../contexts/contexts';
+// import { useContext } from 'react';
+import CreateIcon from '@mui/icons-material/Create';
 
-interface DrawerButtonProps {
-  message: string;
-}
-
-const ToggleDrawerButton: React.FC<DrawerButtonProps> = ({ message }) => {
-  const { isOpen, setIsOpen } = useContext(drawerContext) as drawerPropsType;
-
+const ToggleDrawerButton: React.FC = () => {
   return (
-    <Button
-      onClick={() => {
-        setIsOpen(!isOpen);
-      }}
-    >
-      {message}
-    </Button>
+    <CreateIcon
+    // onClick={() => {
+    //   setIsOpen(!isOpen);
+    // }}
+    />
   );
 };
 

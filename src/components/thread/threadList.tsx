@@ -38,16 +38,23 @@ const Inbox: React.FC = () => {
   return (
     <>
       <List
-        className="w-screen"
+        className="w-screen h-full"
         bordered
         loading={!data}
         itemLayout="vertical"
         size="large"
         pagination={{
-          onChange: (page) => {
-            console.log(page);
+          // onChange: (page) => {
+          //   console.log(page);
+
+          // },
+          responsive: true,
+          // pageSize: 6,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal(total) {
+            return `You have ${total} conversations`;
           },
-          pageSize: 6,
         }}
         dataSource={data}
         renderItem={(item, index) => {

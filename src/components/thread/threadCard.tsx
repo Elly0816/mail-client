@@ -37,6 +37,10 @@ const unreadCountStyle = {
   padding: 10,
 } as CSSProperties;
 
+const cardStyle = {
+  height: '90px',
+} as CSSProperties;
+
 const ThreadItem: React.FC<threadItemProps> = ({
   otherUser,
   item,
@@ -70,7 +74,7 @@ const ThreadItem: React.FC<threadItemProps> = ({
         setThreadId(unreadCount?.threads[data?.indexOf(item) as number]._id);
         navigate(`/messages/${item._id}`);
       }}
-      className="isThread"
+      className="isThread flex flex-row"
       extra={
         <div
           className="rounded-full h-10 w-10"
@@ -91,35 +95,38 @@ const ThreadItem: React.FC<threadItemProps> = ({
       title={otherUser && otherUser[data?.indexOf(item) as number]}
       style={
         unreadCount && unreadCount.unread[data?.indexOf(item) as number] > 0
-          ? unreadStyle
-          : {}
+          ? { ...unreadStyle, ...cardStyle }
+          : { ...cardStyle }
       }
     >
-      <List.Item.Meta
-        className="flex flex-row text-left"
-        // avatar={<Avatar src={item.picture.large} />}
-        title={
-          otherUser && getNameFromUser(otherUser[data?.indexOf(item) as number])
-        }
-        description={
-          item.lastTitle &&
-          // <div>
-          item.lastTitle
-            .toUpperCase()
-            .concat(' - ', item.lastMessage)
-            .substring(0, 35)
-            .concat('...')
-          // </div>
-        }
-        // description={item.lastMessage}
-      />
-      {item.lastModified && (
-        <div className="flex flex-col text-right font text-xs">
-          <h6>{transformDate(item.lastModified).date}</h6>
-          <h6>{transformDate(item.lastModified).time}</h6>
-          {/* {unreadCount && unreadCount.unread[data?.indexOf(item) as number]} */}
-        </div>
-      )}
+      <div className="flex flex-row justify-between">
+        <List.Item.Meta
+          className="flex flex-row text-left"
+          // avatar={<Avatar src={item.picture.large} />}
+          title={
+            otherUser &&
+            getNameFromUser(otherUser[data?.indexOf(item) as number])
+          }
+          description={
+            item.lastTitle &&
+            // <div>
+            item.lastTitle
+              .toUpperCase()
+              .concat(' - ', item.lastMessage)
+              .substring(0, 35)
+              .concat('...')
+            // </div>
+          }
+          // description={item.lastMessage}
+        />
+        {item.lastModified && (
+          <div className="flex flex-col text-right font text-xs">
+            <h6>{transformDate(item.lastModified).date}</h6>
+            <h6>{transformDate(item.lastModified).time}</h6>
+            {/* {unreadCount && unreadCount.unread[data?.indexOf(item) as number]} */}
+          </div>
+        )}
+      </div>
       {/* </Skeleton> */}
     </List.Item>
   );

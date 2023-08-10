@@ -25,7 +25,7 @@ import Typography from '@mui/material/Typography';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MailIcon from '@mui/icons-material/Mail';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import CachedIcon from '@mui/icons-material/Cached';
@@ -225,10 +225,12 @@ const Header: React.FC<HeaderProps> = ({
   );
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box
+    //  sx={{ flexGrow: 1 }}
+    >
       <AppBar position="static">
         <Toolbar>
-          <IconButton
+          {/* <IconButton
             size="large"
             edge="start"
             color="inherit"
@@ -236,7 +238,7 @@ const Header: React.FC<HeaderProps> = ({
             sx={{ mr: 2 }}
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <Typography
             variant="h6"
             noWrap
@@ -245,6 +247,27 @@ const Header: React.FC<HeaderProps> = ({
           >
             {h1}
           </Typography>
+          {h1.toLowerCase() === 'inbox' && (
+            <Badge
+              badgeContent={unreadCount && getUnreadFromState(unreadCount)}
+              color="error"
+            >
+              <MailIcon />
+            </Badge>
+          )}
+          {h1.toLowerCase() === 'messages' && (
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              color="inherit"
+              onClick={() => {
+                navigate(-1);
+                setUserTo(undefined);
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+          )}
 
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>

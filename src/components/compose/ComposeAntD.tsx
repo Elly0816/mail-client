@@ -19,6 +19,9 @@ import {
 } from '../../contexts/contexts';
 import TextArea from 'antd/es/input/TextArea';
 import { useNavigate } from 'react-router-dom';
+import IconButton from '@mui/material/IconButton';
+import CreateIcon from '@mui/icons-material/Create';
+import Typography from '@mui/material/Typography';
 
 const Compose: React.FC = () => {
   const { isOpen, setIsOpen } = useContext(drawerContext) as drawerPropsType;
@@ -42,15 +45,16 @@ const Compose: React.FC = () => {
   const [emailTitle, setEmailTitle] = useState<string | undefined>();
   const [disabled, setDisabled] = useState<boolean>(true);
   const navigate = useNavigate();
+  const [changeToNew, setChangeToNew] = useState<boolean>(false);
 
   useEffect(() => {
-    if (userTo) {
+    if (userTo && !changeToNew) {
       setEmailTo(userTo as string);
       setDisabled(false);
     } else {
       setEmailTo(undefined);
     }
-  }, [userTo, setEmailTo]);
+  }, [userTo, setEmailTo, changeToNew]);
 
   useEffect(() => {
     if (emailTo && emailMessage && emailTitle) {
@@ -59,6 +63,13 @@ const Compose: React.FC = () => {
       setDisabled(true);
     }
   }, [emailTo, emailMessage, emailTitle]);
+
+  useEffect(() => {
+    const currentURL = window.location.href;
+    if (!currentURL.toLowerCase().includes('messages')) {
+      setUserTo(undefined);
+    }
+  }, [setUserTo]);
 
   const sendEmail: () => void = () => {
     console.log(threadId, 'zzz');
@@ -71,7 +82,7 @@ const Compose: React.FC = () => {
         title: emailTitle,
         body: emailMessage,
         to: emailTo,
-        threadId: threadId,
+        threadId: !changeToNew ? threadId : undefined,
       },
     })
       .then((res) => {
@@ -128,9 +139,37 @@ const Compose: React.FC = () => {
     title = title + ` to ${userTo}`;
   }
 
+  const toNewUser = () => {
+    // setUserTo(undefined);
+    // setThreadId(undefined);
+    // setEmailTo(undefined)
+    setChangeToNew(!changeToNew);
+  };
+
   return (
     <Drawer
-      title={title}
+      title={
+        <div className="flex flex-row justify-between ">
+          <div className="flex flex-row place-items-center">
+            {/* <h3 className=""> */}
+            {!changeToNew ? title : 'Send new Message'}
+            {/* </h3> */}
+          </div>
+          {userTo && (
+            <IconButton
+              onClick={toNewUser}
+              size="large"
+              aria-label="account of current user"
+              color="inherit"
+            >
+              <CreateIcon />
+              <Typography>
+                {!changeToNew ? `Send in new Thread` : `Send to ${userTo}`}
+              </Typography>
+            </IconButton>
+          )}
+        </div>
+      }
       placement="bottom"
       width={500}
       onClose={onClose}
@@ -156,7 +195,7 @@ const Compose: React.FC = () => {
             placeholder="Email to: ..."
             onChange={(e) => setEmailTo(e.target.value)}
             value={emailTo}
-            disabled={userTo ? true : false}
+            disabled={!changeToNew ? (userTo ? true : false) : false}
             // style={{ height: '10px' }}
           />
           <Input

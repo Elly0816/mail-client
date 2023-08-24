@@ -21,7 +21,8 @@ import WelcomePage from './pages/welcomePage/WelcomePage';
 import { threadFromDb } from './models/thread.models';
 import InboxPage from './pages/inboxpage/InboxPage';
 import MessagePage from './pages/messagepage/Messages';
-import { queryServer } from './utils/types/helper/helper';
+import { networkError, queryServer } from './utils/types/helper/helper';
+import { isAxiosError } from 'axios';
 // import { COLORS } from './constants/constants';
 
 const router = createBrowserRouter([
@@ -161,6 +162,14 @@ function App() {
     });
   }, [messageApi]);
 
+  const noInternet = useCallback(() => {
+    messageApi.destroy();
+    messageApi.open({
+      type: 'warning',
+      content: 'You have no internet Connection'
+    });
+  }, [messageApi])
+
   useEffect(() => {
     let url = window.location.href;
     const showCantSend = () => {
@@ -205,9 +214,14 @@ function App() {
           setUnreadCount({ threads: threads, unread: unread });
           setUser(data.user);
           setAuth(true);
+          messageApi.destroy();
         })
         .catch((error) => {
-          if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
+          if (isAxiosError(error)){
+            console.log(error);
+            console.log(isAxiosError(error))
+            networkError(error, noInternet); 
+          } else if (!(error?.name.toLowerCase() === 'canceledError'.toLowerCase())) {
             setAuth && setAuth(false);
             setUser && setUser(undefined);
             sessionExpired();
@@ -216,7 +230,6 @@ function App() {
         })
         .finally(() => {
           setShouldFetch(false);
-          messageApi.destroy();
           // setReloading(false);
         });
     }
@@ -230,6 +243,7 @@ function App() {
     fetchingInbox,
     messageApi,
     sessionExpired,
+    noInternet
   ]);
 
   const main = (
@@ -270,6 +284,7 @@ function App() {
           >
             <notificationContext.Provider
               value={{
+                noInternet,
                 loggingOut,
                 fetchingInbox,
                 sendingMessage,

@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import instance from '../../../controllers/axios.controllers';
 import { threadFromDb } from '../../../models/thread.models';
 
@@ -45,4 +45,15 @@ const getUnreadFromState: (unreadCount: {
 }) => number = (unreadCount) => {
   return unreadCount.unread.reduce((prev, curr) => prev + curr);
 };
-export { queryServer, getNameFromUser, transformDate, getUnreadFromState };
+
+
+
+const networkError: (error:AxiosError, noInternet:()=>void) => void = (error, noInternet) => {
+  // if (!error.response || error.code == 'ERR_NETWORK'){
+  //   noInternet()
+  // }
+  if (error.code == 'ERR_NETWORK'){
+    noInternet()
+  }
+}
+export {networkError, queryServer, getNameFromUser, transformDate, getUnreadFromState };

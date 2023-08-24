@@ -26,7 +26,7 @@ export interface loginFormInput {
 
 const LoginForm: React.FC = () => {
   const { setAuth, setUser } = useContext(authContext) as authContextType;
-  const { signUpInstead, logginIn, destroy, wrongCredentials } = useContext(
+  const { signUpInstead, logginIn, destroy, wrongCredentials, noInternet } = useContext(
     notificationContext
   ) as notificationContextType;
 
@@ -61,12 +61,14 @@ const LoginForm: React.FC = () => {
           console.log('Axios error');
           const errorMessage = (
             e.response?.data.message as string
-          ).toLowerCase();
+          )?.toLowerCase() || 'No internet Connection';
           if (errorMessage.includes('not found')) {
             signUpInstead();
             navigate('/signup');
           } else if (errorMessage.includes('incorrect')) {
             wrongCredentials();
+          } else if (errorMessage.toLowerCase().includes('connection')){
+            noInternet();
           }
         }
         // destroy();

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { Button, Drawer, Input, Layout, Space } from 'antd';
-import { queryServer } from '../../utils/types/helper/helper';
+import { networkError, queryServer } from '../../utils/types/helper/helper';
 import { userFromDb } from '../../models/user.models';
 import { COLORS } from '../../constants/constants';
 import { messageFromDb } from '../../models/message.models';
@@ -22,12 +22,13 @@ import { useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import CreateIcon from '@mui/icons-material/Create';
 import Typography from '@mui/material/Typography';
+import { isAxiosError } from 'axios';
 
 const Compose: React.FC = () => {
   const { isOpen, setIsOpen } = useContext(drawerContext) as drawerPropsType;
   const { setUser } = useContext(authContext) as authContextType;
 
-  const { sendingMessage, messageSent, notSendButAuth } = useContext(
+  const { sendingMessage, messageSent, notSendButAuth, noInternet } = useContext(
     notificationContext
   ) as notificationContextType;
 
@@ -122,7 +123,9 @@ const Compose: React.FC = () => {
       .catch((err: Error) => {
         console.log(err);
         setDisabled(false);
-        if (err.message.includes('401')) {
+        if (isAxiosError(err)){
+          networkError(err, noInternet);
+        } else if (err.message.includes('401')) {
           navigate('/login');
           setCantSend(true);
         } else {

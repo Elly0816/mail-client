@@ -68,6 +68,7 @@ export interface notificationContextType {
   wrongCredentials: () => void;
   destroy: () => void;
   loggingOut: () => void;
+  noInternet: () => void;
 }
 
 export const notificationContext = createContext<

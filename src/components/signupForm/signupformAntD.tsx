@@ -8,7 +8,7 @@ import {
 } from '../../contexts/contexts';
 import { userFromDb } from '../../models/user.models';
 import { queryServer } from '../../utils/types/helper/helper';
-import { AxiosError } from 'axios';
+import { isAxiosError } from 'axios';
 import { COLORS } from '../../constants/constants';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -35,7 +35,7 @@ const formItemLayout = {
 
 const SignUpForm: React.FC = () => {
   const { setAuth, setUser } = useContext(authContext) as authContextType;
-  const { signingUp, loginInstead } = useContext(
+  const { signingUp, loginInstead, noInternet } = useContext(
     notificationContext
   ) as notificationContextType;
   const navigate = useNavigate();
@@ -65,7 +65,16 @@ const SignUpForm: React.FC = () => {
       .then(() => {
         navigate('/');
       })
-      .catch((e: AxiosError) => {
+      .catch((e) => {
+        if (isAxiosError(e)){
+          const errorMessage = (
+            e.response?.data.message as string
+          )?.toLowerCase() || 'No internet Connection';
+          console.log(errorMessage)
+           if (errorMessage.toLowerCase().includes('connection')){
+            noInternet();
+           }
+        }
         if (e.response?.status === 403) {
           navigate('/login');
           loginInstead();

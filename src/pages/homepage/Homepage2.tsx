@@ -17,6 +17,7 @@ import Header from '../../components/navbar/Navbar';
 import Compose from '../../components/compose/ComposeAntD';
 import { Typography } from 'antd';
 import { threadFromDb } from '../../models/thread.models';
+import './homepage.css';
 
 interface HomePage {
   setUnreadCount?: () => void;
@@ -60,18 +61,27 @@ const Homepage2: React.FC<HomePage> = () => {
           otherUrl={undefined}
           otherLinkText={undefined}
         />
-        <div className="h-full flex-1">
+        <div className="h-full font-semibold flex flex-col flex-1 home-container italic justify-center items-center">
           {user && (
-            <Title>{`Welcome back ${getNameFromUser(
+            <Title>Welcome back {getNameFromUser(
               user.email as string
-            )}!`}</Title>
+            )}!</Title>
           )}
-          <Title level={2}>
             {unreadCount &&
-              `You have ${getUnreadFromState(
+            <>
+          <Title level={2}> You have</Title>
+              <div className='not-italic unread text-4xl bg-green-500 text-white rounded-full p-5 w-24 inline-flex justify-center items-center h-24'>
+              {/* <h2> */}
+                {getUnreadFromState(
                 unreadCount as { threads: threadFromDb[]; unread: number[] }
-              )} Unread Messages!`}
-          </Title>
+                )}
+                {/* </h2> */}
+              </div>
+              <Title>
+                Unread Messages!
+              </Title>
+                </>
+}
         </div>
         <Compose />
       </Layout>

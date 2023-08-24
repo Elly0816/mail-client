@@ -172,11 +172,13 @@ function App() {
 
   useEffect(() => {
     let url = window.location.href;
+    let timer:NodeJS.Timeout;
     const showCantSend = () => {
       while (!url.includes('login')) {
         console.log('session Expired and waiting');
-        showCantSend();
         url = window.location.href;
+        timer = setTimeout(showCantSend, 500)
+        // showCantSend();
       }
       console.log('session Expired');
       sessionExpired();
@@ -185,7 +187,8 @@ function App() {
       showCantSend();
       setCantSend(false);
     }
-    setCantSend(false);
+    // setCantSend(false);
+    return () => clearTimeout(timer)
   }, [cantSend, setCantSend, sessionExpired]);
 
   useEffect(() => {

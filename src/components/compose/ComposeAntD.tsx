@@ -125,7 +125,8 @@ const Compose: React.FC = () => {
         setDisabled(false);
         if (isAxiosError(err)){
           networkError(err, noInternet);
-        } else if (err.message.includes('401')) {
+        }
+        if (err.message.includes('401')) {
           navigate('/login');
           setCantSend(true);
         } else {
